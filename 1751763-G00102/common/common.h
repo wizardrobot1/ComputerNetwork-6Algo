@@ -2,116 +2,94 @@
 #define __COMMON__H
 #include "time.h"
 #include "stdio.h"
-#include <stdlib.h>  
-#include <string.h>  
-#include <sys/types.h>  
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/socket.h>  
-#include <netinet/in.h> 
-#include <sys/errno.h> 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <sys/errno.h>
 #endif
 
-#define MAX_PKT 1024 //æ•°æ®åŒ…é•¿åº¦
+#define MAX_PKT 1024
 
 #ifndef __COMMON__T
 #define __COMMON__T
+
 typedef enum
 {
     false,
     true
-} boolen;
+} boolen; //×´Ì¬Ã¶¾ÙÁ¿(false=0/true=1)
 
-
-typedef unsigned int seq_nr; //å‘é€åºå·
+typedef unsigned int seq_nr; //·¢ËÍĞòºÅ
 
 typedef struct
 {
     unsigned char data[MAX_PKT];
-} packet;
-
+} packet; //Êı¾İ°ü£¬´¿Êı¾İ
 
 typedef enum
 {
-    data,     //æ•°æ®åŒ…
-    ack,      //ç¡®è®¤åŒ…
-    nak       //å¦å®šç¡®è®¤åŒ…
-} frame_kind; //å¸§ç±»å‹æšä¸¾é‡
-
+    data,     //Êı¾İ°ü
+    ack,      //È·ÈÏ°ü
+    nak       //·ñ¶¨È·ÈÏ°ü
+} frame_kind; //Ö¡ÀàĞÍÃ¶¾ÙÁ¿
 
 typedef struct
 {
-    frame_kind kind; //å¸§ç±»å‹
-    seq_nr seq;      //å‘é€åºå·
-    seq_nr ack;      //æ¥æ”¶åºå·
-    packet info;     //æ•°æ®åŒ…
+    frame_kind kind; //Ö¡ÀàĞÍ
+    seq_nr seq;      //·¢ËÍĞòºÅ
+    seq_nr ack;      //½ÓÊÕĞòºÅ
+    packet info;     //Êı¾İ°ü
 } frame;
 
 typedef enum
 {
-    frame_arrival,       //å¸§åˆ°è¾¾
-    cksum_err,           //æ£€éªŒå’Œé”™
-    timeout,             //å‘é€è¶…æ—¶
-    network_layer_ready, //ç½‘ç»œå±‚å°±ç»ª
-    ack_timeout          //ç¡®è®¤åŒ…è¶…æ—¶
-} event_type;
+    frame_arrival,       //Ö¡µ½´ï
+    cksum_err,           //¼ìÑéºÍ´í
+    timeout,             //·¢ËÍ³¬Ê±
+    network_layer_ready, //ÍøÂç²ã¾ÍĞ÷
+    ack_timeout          //È·ÈÏ°ü³¬Ê±
+} event_type;            //ÊÂ¼şÀàĞÍÃ¶¾ÙÁ¿
 
 #endif
 
-void wait_for_event( event_type *event);
-//é˜»å¡å‡½æ•°ï¼Œç­‰å¾…äº‹ä»¶å‘ç”Ÿ
-void from_network_layer(packet *p);
-//å‘é€æ–¹ä»ç½‘ç»œå±‚å¾—åˆ°çº¯æ•°æ®åŒ…
-void to_network_layer(packet *p);
-//æ¥æ”¶æ–¹å‘ç½‘ç»œå±‚å‘é€çº¯æ•°æ®åŒ…
-//å»æ‰å¸§çš„ç±»å‹ã€å‘é€/ç¡®è®¤åºå·ç­‰æ§åˆ¶ä¿¡æ¯
+void wait_for_event(event_type *event);//×èÈûº¯Êı£¬µÈ´ıÊÂ¼ş·¢Éú
+
+void from_network_layer(packet *p);//·¢ËÍ·½´ÓÍøÂç²ãµÃµ½´¿Êı¾İ°ü
+
+void to_network_layer(packet *p);//½ÓÊÕ·½ÏòÍøÂç²ã·¢ËÍ´¿Êı¾İ°ü,È¥µôÖ¡µÄÀàĞÍ¡¢·¢ËÍ/È·ÈÏĞòºÅµÈ¿ØÖÆĞÅÏ¢
+
+void from_physical_layer(packet *p);//½ÓÊÕ·½´ÓÎïÀí²ãÈ¡µÃÖ¡,Ö¡Í·Î²µÄFLAG×Ö½Ú¡¢Êı¾İÖĞµÄ×Ö½ÚÌî³ä¾ùÒÑÈ¥µô,µ÷ÓÃ±¾º¯ÊıÇ°ÒÑÑéÖ¤¹ıĞ£ÑéºÍ£¬Èô·¢Éú´íÎóÔò·¢ËÍcksum_errÊÂ¼ş£¬Òò´ËÖ»ÓĞÖ¡ÕıÈ·µÄÇé¿öÏÂ»áµ÷ÓÃ±¾º¯Êı
+
+void to_physical_layer(packet *p);//·¢ËÍ·½ÏòÎïÀí²ã·¢ËÍÖ¡,Ö¡Í·Î²¼ÓFLAG×Ö½Ú¡¢Êı¾İÖĞ½øĞĞ×Ö½ÚÌî³ä,¼ÆËãĞ£ÑéºÍ·ÅÈëÖ¡Î²
 
 
-void from_physical_layer(packet *p);
-//æ¥æ”¶æ–¹ä»ç‰©ç†å±‚å–å¾—å¸§
-//å¸§å¤´å°¾çš„FLAGå­—èŠ‚ã€æ•°æ®ä¸­çš„å­—èŠ‚å¡«å……å‡å·²å»æ‰
-//è°ƒç”¨æœ¬å‡½æ•°å‰å·²éªŒè¯è¿‡æ ¡éªŒå’Œï¼Œè‹¥å‘ç”Ÿé”™è¯¯åˆ™å‘é€cksum_erräº‹ä»¶ï¼Œå› æ­¤åªæœ‰å¸§æ­£ç¡®çš„æƒ…å†µä¸‹ä¼šè°ƒç”¨æœ¬å‡½æ•°
+void start_timer(seq_nr k);//Æô¶¯µÚkÖ¡µÄ¶¨Ê±Æ÷
 
-void to_physical_layer(packet *p);
-//å‘é€æ–¹å‘ç‰©ç†å±‚å‘é€å¸§
-//å¸§å¤´å°¾åŠ FLAGå­—èŠ‚ã€æ•°æ®ä¸­è¿›è¡Œå­—èŠ‚å¡«å……
-//è®¡ç®—æ ¡éªŒå’Œæ”¾å…¥å¸§å°¾
+void stop_timer(seq_nr k);//Í£Ö¹µÚkÖ¡µÄ¶¨Ê±Æ÷
+
+void start_ack_timer(void);//Æô¶¯È·ÈÏ°ü¶¨Ê±Æ÷
+
+void stop_ack_timer(void);//Í£Ö¹È·ÈÏ°ü¶¨Ê±Æ÷
+
+void enable_network_layer(void);//½â³ıÍøÂç²ã×èÈû,Ê¹¿ÉÒÔ²úÉúĞÂµÄnetwork_layer_readyÊÂ¼ş
 
 
-void start_timer(seq_nr k);
-//å¯åŠ¨ç¬¬kå¸§çš„å®šæ—¶å™¨
-void stop_timer(seq_nr k);
-//åœæ­¢ç¬¬kå¸§çš„å®šæ—¶å™¨
-void start_ack_timer(void);
-//å¯åŠ¨ç¡®è®¤åŒ…å®šæ—¶å™¨
-void stop_ack_timer(void);
-//åœæ­¢ç¡®è®¤åŒ…å®šæ—¶å™¨
-void enable_network_layer(void);
-//è§£é™¤ç½‘ç»œå±‚é˜»å¡
-//ä½¿å¯ä»¥äº§ç”Ÿæ–°çš„network_layer_readyäº‹ä»¶
-//è§£é™¤ç½‘ç»œå±‚é˜»å¡
-//ä½¿å¯ä»¥äº§ç”Ÿæ–°çš„network_layer_readyäº‹ä»¶
-void disable_network_layer(void);
-//ä½¿ç½‘ç»œå±‚é˜»å¡
-//ä¸å†äº§ç”Ÿæ–°çš„network_layer_readyäº‹ä»¶
-//ä½¿ç½‘ç»œå±‚é˜»å¡
-//ä¸å†äº§ç”Ÿæ–°çš„network_layer_readyäº‹ä»¶
+void disable_network_layer(void);//Ê¹ÍøÂç²ã×èÈû,²»ÔÙ²úÉúĞÂµÄnetwork_layer_readyÊÂ¼ş
 
-/*ä¸åŒç®—æ³•çš„MAX_SEQä¸åŒï¼Œæ•…ä¸èƒ½å®å®šä¹‰
-#define inc(k) if(k<MAX_SEQ) k=k+1; else k=0;
-//ä½¿kåœ¨[0 ~ MAX_SEQ-1]é—´å¾ªç¯å¢é•¿
-//å¦‚æœMAX_SEQ=1ï¼Œåˆ™0/1äº’æ¢
-*/
 
-#define MYSIG_TIMEOUT SIGALARM//a) timeout ç”¨ SIGALRM ä¿¡å·ï¼Œç²¾åº¦åœ¨ ms çº§ï¼ˆä¸è¦ç”¨ alarm å‡½æ•°ï¼‰
+#define MYSIG_TIMEOUT SIGALARM //a) timeout 
 
-#define MYSIG_ACKTIMEOUT SIGALRM//b) ack_timeout ä¹Ÿç”¨ SIGALRM ä¿¡å·
+#define MYSIG_ACKTIMEOUT SIGALRM //b) ack_timeout
 
-#define MYSIG_CHSUM_ERR 35//c) chsum_err ç”¨è‡ªå®šä¹‰çš„ 35 å·ä¿¡å·
+#define MYSIG_CHSUM_ERR 35 //c) chsum_err 
 
-#define MYSIG_FRAME_ARRIVAL 36//d) frame_arrival ç”¨è‡ªå®šä¹‰çš„ 36 å·ä¿¡å·
+#define MYSIG_FRAME_ARRIVAL 36 //d) frame_arrival 
 
-#define MYSIG_NETWORK_LAYER_READY 37//e) network_layer_ready ç”¨è‡ªå®šä¹‰çš„ 37 å·ä¿¡å·
+#define MYSIG_NETWORK_LAYER_READY 37 //e) network_layer_ready
 
-#define MYSIG_ENABLE_NETWORK_LAYER 38//f) enable_network_layer ç”± SDL å‘ SNL å‘é€ 38 å·ä¿¡å·
+#define MYSIG_ENABLE_NETWORK_LAYER 38 //f) enable_network_layer
 
-#define MYSIG_DISABLE_NETWORK_LAYER 39//g) disable_network_layer ç”± SDL å‘ SNL å‘é€ 39 å·ä¿¡å·
+#define MYSIG_DISABLE_NETWORK_LAYER 39 //g) disable_network_layer
