@@ -3,13 +3,13 @@ targets:=sender1_network receiver1_network
 common_dir := ../common
 local_dir := .
 
-common_src := $(wildcard $(common_dir)/*.c)#å–commonæ–‡ä»¶å¤¹æ‰€æœ‰.c æ–‡ä»¶å (å¸¦ç›®å½•)
-common_obj := $(patsubst %.c,%.o,$(common_src))#æŠŠ commonæ–‡ä»¶å¤¹æ‰€æœ‰.c æ–‡ä»¶å æ¢æˆ .o æ–‡ä»¶å (å¸¦ç›®å½•)
+common_src := $(wildcard $(common_dir)/*.c)#È¡commonÎÄ¼ş¼ĞËùÓĞ.c ÎÄ¼şÃû (´øÄ¿Â¼)
+common_obj := $(patsubst %.c,%.o,$(common_src))#°Ñ commonÎÄ¼ş¼ĞËùÓĞ.c ÎÄ¼şÃû »»³É .o ÎÄ¼şÃû (´øÄ¿Â¼)
 
-local_src_a := $(wildcard *.c)#å–æœ¬æ–‡ä»¶å¤¹æ‰€æœ‰.c æ–‡ä»¶å
-targetsc :=$(patsubst %,%.c,$(targets))#targetsçš„cæ–‡ä»¶
-local_src :=$(filter-out $(targetsc),$(local_src_a))#å»targetsçš„cæ–‡ä»¶
-local_obj := $(patsubst %.c,%.o,$(local_src))#æŠŠæœ¬æ–‡ä»¶å¤¹æ‰€æœ‰.c æ–‡ä»¶å æ¢æˆ .o æ–‡ä»¶å 
+local_src_a := $(wildcard *.c)#È¡±¾ÎÄ¼ş¼ĞËùÓĞ.c ÎÄ¼şÃû
+targetsc :=$(patsubst %,%.c,$(targets))#targetsµÄcÎÄ¼ş
+local_src :=$(filter-out $(targetsc),$(local_src_a))#È¥targetsµÄcÎÄ¼ş
+local_obj := $(patsubst %.c,%.o,$(local_src))#°Ñ±¾ÎÄ¼ş¼ĞËùÓĞ.c ÎÄ¼şÃû »»³É .o ÎÄ¼şÃû 
 
 objs:=$(common_obj)
 objs+=$(local_obj)
@@ -20,7 +20,7 @@ all:$(targets)
 
 .PHONY:all clean
 
-$(objs):%.o:%.c#åœ¨å„è‡ªç›®å½•ä¸‹ç”Ÿæˆobjæ–‡ä»¶
+$(objs):%.o:%.c#ÔÚ¸÷×ÔÄ¿Â¼ÏÂÉú³ÉobjÎÄ¼ş
 	gcc -c $< -o $@
 
 $(targets):$(objs)
