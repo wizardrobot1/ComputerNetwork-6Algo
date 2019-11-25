@@ -2,9 +2,19 @@
 #define __COMMON__H
 #include "time.h"
 #include "stdio.h"
+#include <stdlib.h>  
+#include <string.h>  
+#include <sys/types.h>  
+#include <sys/wait.h>
+#include <sys/socket.h>  
+#include <netinet/in.h> 
+#include <sys/errno.h> 
 #endif
 
 #define MAX_PKT 1024 //数据包长度
+
+#ifndef __COMMON__T
+#define __COMMON__T
 typedef enum
 {
     false,
@@ -45,6 +55,7 @@ typedef enum
     ack_timeout          //确认包超时
 } event_type;
 
+#endif
 
 void wait_for_event( event_type *event);
 //阻塞函数，等待事件发生
