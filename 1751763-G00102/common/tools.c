@@ -43,3 +43,34 @@ int set_lock(int fd,int type)
     
     return 0;  
 }  
+
+
+int getPid(char*str)			// be sure that str is correct 
+{
+	char buff[10] = {0};int pid=0;
+	char comd[100]={0};	
+	sprintf(comd,"ps -e | grep \'%s\' | awk \'{print $1}\'",str);
+
+	FILE *fp=NULL;
+	while(!pid){
+		fp = popen(comd, "r");    
+		while (NULL != fgets(buff, 10, fp));
+    	pclose(fp);
+
+    	pid=atoi(buff);
+	}
+
+//    printf("pid:%d\n",pid);
+    return pid;	
+}
+void sendSIG(int pid,int SIG)
+{
+	int ret;
+
+	if((ret=kill(pid,SIG))!=0){
+		printf("kill %d error\n",SIG);
+		return ;
+	}
+	else
+		printf("kill %d successfully\n",SIG);
+}
