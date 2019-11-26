@@ -8,12 +8,12 @@ void error_exit(char *name)
 
 int getpid_by_name(const char* proc_name,int *pids)
 {
-        char str_part1[100]="ps -e | grep \'";
-        char *str_part2="\' | awk \'{print $1}\'";
+        char str_part1[100]="ps -ef | grep \'";
+        char *str_part2="\' | awk \'{print $2}\'";
         char ans[10]="";
         strcat(str_part1,proc_name);
         strcat(str_part1,str_part2);
-    
+        printf("%s\n",str_part1);
         int count=0;
         FILE *fp = popen(str_part1,"r");
         while (NULL != fgets(ans, 10, fp)) 
@@ -45,7 +45,7 @@ int set_lock(int fd,int type)
 }  
 
 
-int getPid(char*str)			// be sure that str is correct 
+int getPid(const char*str)			// be sure that str is correct 
 {
 	char buff[10] = {0};int pid=0;
 	char comd[100]={0};	

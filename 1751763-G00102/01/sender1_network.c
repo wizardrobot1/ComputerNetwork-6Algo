@@ -15,14 +15,12 @@ static void SIGHANDLER_MYSIG_DISABLE_NETWORK_LAYER(int signo)
     ena = 0;
 }
 
-
-
 int main()
 {
     const char *share_file = NETWORK_DATALINK_SAHRE_FILE;
-    const char *datalink_proc = "sender1_datalink";
+    const char *datalink_proc = "datalink";
 
-    char filein[MAX_FILENANE_LEN], fileout[MAX_FILENANE_LEN];
+    char filein[MAX_FILENANE_LEN] = "test", fileout[MAX_FILENANE_LEN];
     printf("请输入要传输的文件名:\n");
     scanf("%s", filein);
 
@@ -32,19 +30,22 @@ int main()
 
     char buffer[MAX_PKT + 1];
     seq_nr seq_PKT = 0;
-    int rdsize=-1, i;
+    int rdsize = -1, i;
 
-    int pids[100];
+    /*int pids[100];
+    pids[0]=getPid(datalink_proc);
+    
     if (getpid_by_name(datalink_proc, pids) == 0) //理论上和实际上返回值都应该是1
     {
         printf("请检测链路层程序是否正在运行\n");
         return 0;
     }
-
+    */
     signal(MYSIG_DISABLE_NETWORK_LAYER, SIGHANDLER_MYSIG_DISABLE_NETWORK_LAYER);
     signal(MYSIG_ENABLE_NETWORK_LAYER, SIGHANDLER_MYSIG_ENABLE_NETWORK_LAYER);
 
-    int fdout,lock=0;
+    int fdout, lock = 0;
+
     while (rdsize)
     {
 
@@ -60,15 +61,18 @@ int main()
             if (fdout == -1)
                 error_exit("open file");
 
+            set_lock(fdout, F_WRLCK);
             write(fdout, buffer, MAX_PKT);
+            set_lock(fdout, F_UNLCK);
 
             inc_seq_PKT(seq_PKT);
 
-            sendSIG(pids[0],MYSIG_NETWORK_LAYER_READY);
+            printf("write share ok\n");
+            //sendSIG(pids[0],MYSIG_NETWORK_LAYER_READY);
         }
 
         pause();
-
+        printf("pause ok\n");
         if (ena) //datalink成功读完share文件了,开锁，关闭文件，开始写下一个文件
         {
             if (lock)
@@ -87,6 +91,5 @@ int main()
             }
         }
     }
-
     fclose(fin);
 }

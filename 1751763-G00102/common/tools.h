@@ -13,4 +13,4 @@ int set_lock(int fd,int type);
 
 void sendSIG(int pid,int SIG);
 
-int getPid(char*str);
+int getPid(const char*str);

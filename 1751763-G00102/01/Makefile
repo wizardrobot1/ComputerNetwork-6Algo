@@ -1,4 +1,4 @@
-targets:=sender1_network receiver1_network
+targets:=sender1_network receiver1_network sender1_datalink receiver1_datalink
 
 common_dir := ../common
 local_dir := .
@@ -29,4 +29,4 @@ $(targets):%:%.o
 	gcc -o $@ $< $(objs)
 
 clean:
-	-rm $(targets) *.o $(common_dir)/*.o network_datalink.share.*
+	-rm $(targets) *.o $(common_dir)/*.o network_datalink.share.* datalink_network.share.* 

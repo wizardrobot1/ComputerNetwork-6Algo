@@ -18,10 +18,22 @@ int main()
 {
     frame r;
     event_type event;
+
+    int pids[100];
+    const char *network_proc = "receiver1_network";
+    while (getpid_by_name(network_proc, pids) == 0) //理论上和实际上返回值都应该是1
+    {
+        printf("not open\n");
+        sleep(1);//等待网络层打开
+    }
+    printf("receiver_datalink ready\n");
+
+    char share_file_name[256],buffer[1024];
+    int share_file,seq_PKT=0;
     while(1)
     {
         wait_for_event(&event);
-        from_physical_layer(&r);    
-        to_network_layer(&r.info);
+        from_physical_layer(&r);
+        to_network_layer(&r.info,pids[0]);
     }
 }

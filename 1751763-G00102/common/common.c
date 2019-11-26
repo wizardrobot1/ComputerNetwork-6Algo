@@ -4,17 +4,21 @@ void from_network_layer(packet *p,int pid)//∑¢ÀÕ∑Ω¥”Õ¯¬Á≤„µ√µΩ¥ø ˝æ›∞¸
 {
     static int seq_PKT=0;// π”√æ≤Ã¨æ÷≤ø±‰¡ø
     char share_file_name[MAX_FILENANE_LEN];
-    int share_file;
+    int share_file=-1;
     sprintf(share_file_name, "%s%04d", NETWORK_DATALINK_SAHRE_FILE, seq_PKT);
     inc_seq_PKT(seq_PKT);
-    share_file = open(share_file_name, O_RDONLY);
-
+    while (share_file==-1)
+    {
+        share_file = open(share_file_name, O_RDONLY);
+    }
     //º”À¯£¨∂¡»°Œƒº˛
-    set_lock(share_file,F_WRLCK);
+    //printf("set lock to %s %d\n",share_file_name,share_file);
+    set_lock(share_file,F_RDLCK);
     read(share_file,p->data,MAX_PKT);
     set_lock(share_file,F_UNLCK);//∂¡ÕÍø™À¯
+    close(share_file);
     //œÚNETWORK_LAYER∑¢ÀÕenable –≈∫≈
-    kill(pid,MYSIG_ENABLE_NETWORK_LAYER);
+    sendSIG(pid,MYSIG_ENABLE_NETWORK_LAYER);
 }
 
 void to_network_layer(packet *p,int pid)//Ω” ’∑ΩœÚÕ¯¬Á≤„∑¢ÀÕ¥ø ˝æ›∞¸,»•µÙ÷°µƒ¿‡–Õ°¢∑¢ÀÕ/»∑»œ–Ú∫≈µ»øÿ÷∆–≈œ¢
@@ -27,7 +31,7 @@ void to_network_layer(packet *p,int pid)//Ω” ’∑ΩœÚÕ¯¬Á≤„∑¢ÀÕ¥ø ˝æ›∞¸,»•µÙ÷°µƒ¿‡–
     share_file = open(share_file_name, O_WRONLY | O_CREAT, 0644);
 
     write(share_file,p->data,MAX_PKT);
-
+    close(share_file);
     //œÚNETWORK_LAYER∑¢ÀÕenable –≈∫≈
     kill(pid,MYSIG_DATALINK_LAYER_READY);
 }
