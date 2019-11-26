@@ -64,7 +64,7 @@ int main()
 
             inc_seq_PKT(seq_PKT);
 
-            kill(pids[0],MYSIG_NETWORK_LAYER_READY);
+            sendSIG(pids[0],MYSIG_NETWORK_LAYER_READY);
         }
 
         pause();

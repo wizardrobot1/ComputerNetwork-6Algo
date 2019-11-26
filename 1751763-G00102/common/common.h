@@ -59,7 +59,7 @@ typedef enum
 
 #endif
 
-void wait_for_event(event_type *event);//阻塞函数，等待事件发生
+
 
 void from_network_layer(packet *p,int pid);//发送方从网络层得到纯数据包
 

@@ -31,3 +31,4 @@ void to_network_layer(packet *p,int pid)//½ÓÊÕ·½ÏòÍøÂç²ã·¢ËÍ´¿Êı¾İ°ü,È¥µôÖ¡µÄÀàĞ
     //ÏòNETWORK_LAYER·¢ËÍenable ĞÅºÅ
     kill(pid,MYSIG_DATALINK_LAYER_READY);
 }
+
