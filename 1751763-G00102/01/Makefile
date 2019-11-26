@@ -29,4 +29,4 @@ $(targets):%:%.o
 	gcc -o $@ $< $(objs)
 
 clean:
-	-rm $(targets) *.o $(common_dir)/*.o
+	-rm $(targets) *.o $(common_dir)/*.o network_datalink.share.*
