@@ -9,15 +9,10 @@ static void SIGHANDLER_MYSIG_DATALINK_LAYER_READY(int signo)
     ena = 1;
 }
 
-#define inc_seq_PKT(k) \
-    if (k < 10000)     \
-        k = k + 1;     \
-    else               \
-        k = 0;
 
 int main()
 {
-    const char *share_file = "datalink_network.share."; //不是network_datalink
+    const char *share_file = DATALINK_NETWORK_SAHRE_FILE; //不是network_datalink
 
     const char*fileout = "接收到的文件";
     int fdout = open(fileout, O_WRONLY | O_CREAT, 0644);

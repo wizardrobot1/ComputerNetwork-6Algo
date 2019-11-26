@@ -15,15 +15,11 @@ static void SIGHANDLER_MYSIG_DISABLE_NETWORK_LAYER(int signo)
     ena = 0;
 }
 
-#define inc_seq_PKT(k) \
-    if (k < 10000)     \
-        k = k + 1;     \
-    else               \
-        k = 0;
+
 
 int main()
 {
-    const char *share_file = "network_datalink.share.";
+    const char *share_file = NETWORK_DATALINK_SAHRE_FILE;
     const char *datalink_proc = "sender1_datalink";
 
     char filein[MAX_FILENANE_LEN], fileout[MAX_FILENANE_LEN];

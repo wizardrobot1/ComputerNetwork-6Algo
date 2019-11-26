@@ -4,9 +4,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
+#include <sys/file.h>  
+#include <sys/stat.h> 
 #include <netinet/in.h>
 #include <sys/errno.h>
 #endif
@@ -57,7 +61,7 @@ typedef enum
 
 void wait_for_event(event_type *event);//×èÈûº¯Êı£¬µÈ´ıÊÂ¼ş·¢Éú
 
-void from_network_layer(packet *p);//·¢ËÍ·½´ÓÍøÂç²ãµÃµ½´¿Êı¾İ°ü
+void from_network_layer(packet *p,int pid);//·¢ËÍ·½´ÓÍøÂç²ãµÃµ½´¿Êı¾İ°ü
 
 void to_network_layer(packet *p);//½ÓÊÕ·½ÏòÍøÂç²ã·¢ËÍ´¿Êı¾İ°ü,È¥µôÖ¡µÄÀàĞÍ¡¢·¢ËÍ/È·ÈÏĞòºÅµÈ¿ØÖÆĞÅÏ¢
 
@@ -79,7 +83,7 @@ void enable_network_layer(void);//½â³ıÍøÂç²ã×èÈû,Ê¹¿ÉÒÔ²úÉúĞÂµÄnetwork_layer_rea
 
 void disable_network_layer(void);//Ê¹ÍøÂç²ã×èÈû,²»ÔÙ²úÉúĞÂµÄnetwork_layer_readyÊÂ¼ş
 
-
+//------------------------------------My Signal Def-------------------------------------------
 #define MYSIG_TIMEOUT SIGALARM //a) timeout 
 
 #define MYSIG_ACKTIMEOUT SIGALRM //b) ack_timeout
@@ -93,3 +97,20 @@ void disable_network_layer(void);//Ê¹ÍøÂç²ã×èÈû,²»ÔÙ²úÉúĞÂµÄnetwork_layer_readyÊ
 #define MYSIG_ENABLE_NETWORK_LAYER 38 //f) enable_network_layer
 
 #define MYSIG_DISABLE_NETWORK_LAYER 39 //g) disable_network_layer
+
+#define MYSIG_DATALINK_LAYER_READY 40 // datalink_layer_ready //ÍøÂç²ã¿ÉÒÔÊÕÊı¾İÁË
+
+//------------------------------------Share file name Def-------------------------------------------
+
+#define NETWORK_DATALINK_SAHRE_FILE "network_datalink.share."
+#define DATALINK_NETWORK_SAHRE_FILE "datalink_network.share."
+//------------------------------------Share file seq_inc_fun Def
+#define inc_seq_PKT(k) \
+    if (k < 10000)     \
+        k = k + 1;     \
+    else               \
+        k = 0;
+
+#define MAX_FILENANE_LEN 256
+
+
