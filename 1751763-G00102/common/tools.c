@@ -13,7 +13,7 @@ int getpid_by_name(const char* proc_name,int *pids)
         char ans[10]="";
         strcat(str_part1,proc_name);
         strcat(str_part1,str_part2);
-        printf("%s\n",str_part1);
+        
         int count=0;
         FILE *fp = popen(str_part1,"r");
         while (NULL != fgets(ans, 10, fp)) 

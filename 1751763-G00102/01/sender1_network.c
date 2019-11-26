@@ -35,7 +35,7 @@ int main()
     /*int pids[100];
     pids[0]=getPid(datalink_proc);
     
-    if (getpid_by_name(datalink_proc, pids) == 0) //理论上和实际上返回值都应该是1
+    if (getpid_by_name(datalink_proc, pids) == 3) 
     {
         printf("请检测链路层程序是否正在运行\n");
         return 0;
