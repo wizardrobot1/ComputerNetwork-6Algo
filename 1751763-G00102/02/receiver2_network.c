@@ -18,12 +18,9 @@ int main()
     int fdout = open(fileout, O_WRONLY | O_CREAT, 0644);
     if (fdout == -1)
         error_exit("open file");
+        
     char filein[MAX_FILENANE_LEN];
-
     FILE *fin;
-    if (fin == NULL)
-        error_exit("open file");
-
     char buffer[2][MAX_PKT + 1];//因为要判断结束包后，才会对倒二个包进行处理
     memset(buffer[0], 0, MAX_PKT + 1);
     memset(buffer[1], 0, MAX_PKT + 1);
