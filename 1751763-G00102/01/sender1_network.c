@@ -32,15 +32,15 @@ int main()
     seq_nr seq_PKT = 0;
     int rdsize = -1, i;
 
-    /*int pids[100];
-    pids[0]=getPid(datalink_proc);
-    
-    if (getpid_by_name(datalink_proc, pids) == 3) 
+    int pids[100];
+    //pids[0]=getPid(datalink_proc);
+    printf("check datalink ...\n");
+    if (getpid_by_name(datalink_proc, pids) != 3) 
     {
         printf("请检测链路层程序是否正在运行\n");
         return 0;
     }
-    */
+    printf("datalink check ok\n");
     signal(MYSIG_DISABLE_NETWORK_LAYER, SIGHANDLER_MYSIG_DISABLE_NETWORK_LAYER);
     signal(MYSIG_ENABLE_NETWORK_LAYER, SIGHANDLER_MYSIG_ENABLE_NETWORK_LAYER);
 
@@ -67,8 +67,8 @@ int main()
 
             inc_seq_PKT(seq_PKT);
 
-            printf("write share ok\n");
-            //sendSIG(pids[0],MYSIG_NETWORK_LAYER_READY);
+            printf("write share ok,send signal to %d\n",pids[0]);
+            kill(pids[0],MYSIG_NETWORK_LAYER_READY);
         }
 
         pause();
