@@ -21,8 +21,6 @@ int main()
     char filein[MAX_FILENANE_LEN];
 
     FILE *fin;
-    if (fin == NULL)
-        error_exit("open file");
 
     char buffer[2][MAX_PKT + 1];//因为要判断结束包后，才会对倒二个包进行处理
     memset(buffer[0], 0, MAX_PKT + 1);
