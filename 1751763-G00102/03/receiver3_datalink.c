@@ -37,7 +37,7 @@ int main()
     event_type event;
     
 #ifndef MYDEBUG
-    frame_expectd = 0;
+    frame_expected = 0;
     while (true)
     {
         wait_for_event(&event); //等两个事件
@@ -46,7 +46,7 @@ int main()
             from_physical_layer(&r);
             if (r.seq == frame_expected)
             { //序号匹配
-                to_network_layer(&r.info);
+                to_network_layer(&r.info,pids[0]);
                 inc(frame_expected);
             }
             s.ack = 1 - frame_expected; //无论是否匹配,0-1变换

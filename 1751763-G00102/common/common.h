@@ -84,7 +84,7 @@ void enable_network_layer(void);//解除网络层阻塞,使可以产生新的network_layer_rea
 void disable_network_layer(void);//使网络层阻塞,不再产生新的network_layer_ready事件
 
 //------------------------------------My Signal Def-------------------------------------------
-#define MYSIG_TIMEOUT SIGALARM //a) timeout 
+#define MYSIG_TIMEOUT SIGALRM //a) timeout 
 
 #define MYSIG_ACKTIMEOUT SIGALRM //b) ack_timeout
 

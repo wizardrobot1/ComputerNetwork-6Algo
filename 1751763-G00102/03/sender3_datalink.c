@@ -45,7 +45,7 @@ int main()
 
 #ifndef MYDEBUG
     next_frame_to_send = 0;      //初始帧号为0
-    from_network_layer(&buffer,pid[0]); //取首帧
+    from_network_layer(&buffer,pids[0]); //取首帧
     while (1)
     {
         s.info = buffer;
@@ -60,7 +60,7 @@ int main()
             if (s.ack == next_frame_to_send)
             {
                 stop_timer(s.ack);
-                from_network_layer(&buffer,pid[0]);
+                from_network_layer(&buffer,pids[0]);
                 inc(next_frame_to_send);
             }
             //ACK到，但s.ack不对

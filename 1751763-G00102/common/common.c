@@ -36,3 +36,19 @@ void to_network_layer(packet *p,int pid)//½ÓÊÕ·½ÏòÍøÂç²ã·¢ËÍ´¿Êı¾İ°ü,È¥µôÖ¡µÄÀàĞ
     kill(pid,MYSIG_DATALINK_LAYER_READY);
 }
 
+void from_physical_layer(frame *f){};//½ÓÊÕ·½´ÓÎïÀí²ãÈ¡µÃÖ¡,Ö¡Í·Î²µÄFLAG×Ö½Ú¡¢Êı¾İÖĞµÄ×Ö½ÚÌî³ä¾ùÒÑÈ¥µô,µ÷ÓÃ±¾º¯ÊıÇ°ÒÑÑéÖ¤¹ıĞ£ÑéºÍ£¬Èô·¢Éú´íÎóÔò·¢ËÍcksum_errÊÂ¼ş£¬Òò´ËÖ»ÓĞÖ¡ÕıÈ·µÄÇé¿öÏÂ»áµ÷ÓÃ±¾º¯Êı
+
+void to_physical_layer(frame *f){};//·¢ËÍ·½ÏòÎïÀí²ã·¢ËÍÖ¡,Ö¡Í·Î²¼ÓFLAG×Ö½Ú¡¢Êı¾İÖĞ½øĞĞ×Ö½ÚÌî³ä,¼ÆËãĞ£ÑéºÍ·ÅÈëÖ¡Î²
+
+void start_timer(seq_nr k){};//Æô¶¯µÚkÖ¡µÄ¶¨Ê±Æ÷
+
+void stop_timer(seq_nr k){};//Í£Ö¹µÚkÖ¡µÄ¶¨Ê±Æ÷
+
+void start_ack_timer(void){};//Æô¶¯È·ÈÏ°ü¶¨Ê±Æ÷
+
+void stop_ack_timer(void){};//Í£Ö¹È·ÈÏ°ü¶¨Ê±Æ÷
+
+void enable_network_layer(void){};//½â³ıÍøÂç²ã×èÈû,Ê¹¿ÉÒÔ²úÉúĞÂµÄnetwork_layer_readyÊÂ¼ş
+
+
+void disable_network_layer(void){};//Ê¹ÍøÂç²ã×èÈû,²»ÔÙ²úÉúĞÂµÄnetwork_layer_readyÊÂ¼ş
