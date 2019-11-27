@@ -18,13 +18,15 @@ static void wait_for_event(event_type *event) //阻塞函数，等待事件发生
 
 int main()
 {
-    frame s;
-    packet buffer;
-    event_type event;
+    
     int pids[100];
     const char *network_proc = "sender2_network";
     signal(MYSIG_NETWORK_LAYER_READY, SIG_IGN); //屏蔽MYSIG_NETWORK_LAYER_READY信号
 
+    frame s;
+    packet buffer;
+    event_type event;
+    
 #ifndef MYDEBUG
 
     while (getpid_by_name(network_proc, pids) != 3) //一个sh , 一个 grep , 一个 ./sender1_network
@@ -36,7 +38,7 @@ int main()
     {
         from_network_layer(&buffer, pids[0]);
         memcpy(s.info.data, buffer.data, 1024);
-
+        s.kind=data;
         //to_physical_layer(&s);
         wait_for_event(&event);
     }

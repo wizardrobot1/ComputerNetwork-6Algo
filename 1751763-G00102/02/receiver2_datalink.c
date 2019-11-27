@@ -16,8 +16,7 @@ static void wait_for_event(event_type *event) //阻塞函数，等待事件发生
 
 int main()
 {
-    frame r,s;
-    event_type event;
+
 
     int pids[100];
     const char *network_proc = "receiver2_network";
@@ -27,12 +26,15 @@ int main()
     }
     printf("receiver_datalink ready %d\n", pids[0]);
 
+    frame r,s;
+    event_type event;
 #ifndef MYDEBUG
     while (1)
     {
         wait_for_event(&event);
         //from_physical_layer(&r);
         to_network_layer(&r.info, pids[0]);
+        s.kind=ack;
         //to_physical_layer(&s);
     }
 #endif
