@@ -30,13 +30,15 @@ int getpid_by_name2(const char* proc_name,int *pids)
 
 int main()
 {
-    frame s;
-    packet buffer;
+    
 
     int pids[100];
     const char *network_proc = "sender1_network";
     signal(MYSIG_NETWORK_LAYER_READY, SIG_IGN); //屏蔽MYSIG_NETWORK_LAYER_READY信号
 
+    frame s;
+    packet buffer;
+    
 #ifndef MYDEBUG
 
     while (getpid_by_name(network_proc, pids) != 3) //一个sh , 一个 grep , 一个 ./sender1_network
@@ -48,8 +50,8 @@ int main()
     {
         from_network_layer(&buffer, pids[0]);
         memcpy(s.info.data, buffer.data, 1024);
-
-        //to_physical_layer(&s.info);
+        s.kind=data;
+        //to_physical_layer(&s);
     }
 #endif
 
