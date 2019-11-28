@@ -1,6 +1,7 @@
 #include"common.h"
 #include"tools.h"
 
+static frame_timer *mytimer = NULL;
 
 void enable_network_layer(const char* proc_name)
 {
@@ -56,6 +57,32 @@ void enable_network_layer_read(const char* proc_name)
         pid=get_first_pid(proc_name);
     sendSIG(pid,MYSIG_DATALINK_LAYER_READY);
 }
+
+void start_timer(seq_nr k)
+{
+    static frame_timer *rear = mytimer;
+    frame_timer *p=mytimer;
+
+    switch k :
+    {
+        case 0:
+        {
+            myhead=(frame_second)malloc(sizeof(frame_second));
+            myhead->sec=MYTIMER_TIMEOUT_TIME;
+        }
+        default :
+        {
+
+        }
+    }
+
+};//启动第k帧的定时器
+
+void stop_timer(seq_nr k)
+{
+
+};//停止第k帧的定时器
+
 
 void from_physical_layer(frame *f){};//接收方从物理层取得帧,帧头尾的FLAG字节、数据中的字节填充均已去掉,调用本函数前已验证过校验和，若发生错误则发送cksum_err事件，因此只有帧正确的情况下会调用本函数
 
