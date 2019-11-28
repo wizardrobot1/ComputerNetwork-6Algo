@@ -28,44 +28,42 @@ int getpid_by_name2(const char* proc_name,int *pids)
 }
 */
 
+
+
+
+
 int main()
 {
     
 
-    int pids[100];
-    const char *network_proc = "sender1_network";
+    const char *network_proc = "network";
     signal(MYSIG_NETWORK_LAYER_READY, SIG_IGN); //屏蔽MYSIG_NETWORK_LAYER_READY信号
+    printf("datalink ready \n");
 
     frame s;
     packet buffer;
+
     
 #ifndef MYDEBUG
 
-    while (getpid_by_name(network_proc, pids) != 3) //一个sh , 一个 grep , 一个 ./sender1_network
-    {
-        sleep(1); //等待网络层打开
-    }
-
     while (1)
     {
-        from_network_layer(&buffer, pids[0]);
-        memcpy(s.info.data, buffer.data, 1024);
+        from_network_layer(&buffer);
+        enable_network_layer(network_proc);//通知网络层发下一数据
+        memcpy(s.info.data, buffer.data, MAX_PKT);
         s.kind=data;
-        //to_physical_layer(&s);
+        to_physical_layer(&s);
     }
 #endif
 
 #ifdef MYDEBUG
-    while (getpid_by_name(network_proc, pids) != 3) //一个sh , 一个 grep , 一个 ./sender1_network
-    {
-        sleep(1); //等待网络层打开
-    }
-    printf("receiver_datalink ready %d\n", pids[0]);
+    
 
     int ftest = open("test1", O_WRONLY | O_CREAT, 0644);
     while (1)
     {
-        from_network_layer(&buffer, pids[0]);
+        from_network_layer(&buffer);
+        enable_network_layer(network_proc);//通知网络层发下一数据
         memcpy(s.info.data, buffer.data, 1024);
         write(ftest, s.info.data, MAX_PKT);
 

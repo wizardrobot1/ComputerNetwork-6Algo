@@ -30,13 +30,9 @@ static void wait_for_event(event_type *event) //阻塞函数，等待事件发生
 int main()
 {
 
-    int pids[100];
-    const char *network_proc = "sender3_network";
-    signal(MYSIG_NETWORK_LAYER_READY, SIG_IGN);     //屏蔽MYSIG_NETWORK_LAYER_READY信号
-    while (getpid_by_name(network_proc, pids) != 3) //一个sh , 一个 grep , 一个 ./sender1_network
-    {
-        sleep(1); //等待网络层打开
-    }
+    const char *network_proc = "network";
+    signal(MYSIG_NETWORK_LAYER_READY, SIG_IGN); //屏蔽MYSIG_NETWORK_LAYER_READY信号
+    printf("datalink ready \n");
 
     seq_nr next_frame_to_send;
     frame s;
@@ -45,7 +41,8 @@ int main()
 
 #ifndef MYDEBUG
     next_frame_to_send = 0;      //初始帧号为0
-    from_network_layer(&buffer,pids[0]); //取首帧
+    from_network_layer(&buffer); //取首帧
+    enable_network_layer(network_proc);//通知网络层发下一数据
     while (1)
     {
         s.info = buffer;
@@ -60,7 +57,8 @@ int main()
             if (s.ack == next_frame_to_send)
             {
                 stop_timer(s.ack);
-                from_network_layer(&buffer,pids[0]);
+                from_network_layer(&buffer);
+                enable_network_layer(network_proc);//通知网络层发下一数据
                 inc(next_frame_to_send);
             }
             //ACK到，但s.ack不对
@@ -73,18 +71,5 @@ int main()
 
 #ifdef MYDEBUG
 
-    printf("receiver_datalink ready %d\n", pids[0]);
-
-    int ftest = open("test1", O_WRONLY | O_CREAT, 0644);
-    while (1)
-    {
-        from_network_layer(&buffer, pids[0]);
-        memcpy(s.info.data, buffer.data, 1024);
-        write(ftest, s.info.data, MAX_PKT);
-
-        //to_physical_layer(&s);
-    }
-
-    close(ftest);
 #endif
 }

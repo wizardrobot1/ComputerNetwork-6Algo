@@ -14,17 +14,19 @@ static void wait_for_event(event_type *event) //阻塞函数，等待事件发生
     *event = catch_event;
 }
 
+
 int main()
 {
     
 
-    int pids[100];
-    const char *network_proc = "receiver1_network";
-    while (getpid_by_name(network_proc, pids) != 3)
+    const char *network_proc = "network";
+
+    if (get_first_pid(network_proc)==-1)//因为要向网络层发信号提醒它读文件，所以要先打开网络层
     {
-        sleep(1); //等待网络层打开
-    }
-    printf("receiver_datalink ready %d\n", pids[0]);
+        printf("plz start netwrok_layer first");
+        return 0;
+    }    
+    printf("datalink ready \n");
 
     frame r;
     event_type event;
@@ -32,13 +34,14 @@ int main()
     while (1)
     {
         wait_for_event(&event);
-        //from_physical_layer(&r);
-        to_network_layer(&r.info, pids[0]);
+        from_physical_layer(&r);
+        to_network_layer(&r.info);
+        enable_network_layer_read(network_proc);
     }
 #endif
 
 #ifdef MYDEBUG
-    char share_file_name[256];
+    char share_file_name[MAX_FILENANE_LEN];
     int share_file, seq_PKT = 0;
     while (1)
     {
@@ -48,7 +51,8 @@ int main()
         if (share_file==-1)
             break;
         read(share_file, r.info.data, MAX_PKT);
-        to_network_layer(&r.info, pids[0]);
+        to_network_layer(&r.info);
+        enable_network_layer_read(network_proc);
         close(share_file);
     }
 #endif
