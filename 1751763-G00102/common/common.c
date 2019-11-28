@@ -88,9 +88,30 @@ void from_physical_layer(frame *f){};//接收方从物理层取得帧,帧头尾的FLAG字节、数
 
 void to_physical_layer(frame *f){};//发送方向物理层发送帧,帧头尾加FLAG字节、数据中进行字节填充,计算校验和放入帧尾
 
-void start_timer(seq_nr k){};//启动第k帧的定时器
+void start_timer(seq_nr k)
+{
+    static frame_timer *rear = mytimer;
+    frame_timer *p=mytimer;
 
-void stop_timer(seq_nr k){};//停止第k帧的定时器
+    switch k :
+    {
+        case 0:
+        {
+            myhead=(frame_second)malloc(sizeof(frame_second));
+            myhead->sec=MYTIMER_TIMEOUT_TIME;
+        }
+        default :
+        {
+
+        }
+    }
+
+};//启动第k帧的定时器
+
+void stop_timer(seq_nr k)
+{
+
+};//停止第k帧的定时器
 
 void start_ack_timer(void){};//启动确认包定时器
 
