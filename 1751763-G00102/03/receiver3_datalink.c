@@ -51,6 +51,7 @@ int main()
             }
             s.ack = 1 - frame_expected; //无论是否匹配,0-1变换
             s.kind=ack;
+            s.seq=0xffffffff;
             to_physical_layer(&s);
         }
         //event = cksum_err，放弃，直接等待下一个事件

@@ -35,6 +35,7 @@ int main()
         //from_physical_layer(&r);
         to_network_layer(&r.info, pids[0]);
         s.kind=ack;
+        s.seq=0xffffffff;
         //to_physical_layer(&s);
     }
 #endif
