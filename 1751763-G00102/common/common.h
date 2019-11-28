@@ -54,16 +54,17 @@ typedef enum
     cksum_err,           //检验和错
     timeout,             //发送超时
     network_layer_ready, //网络层就绪
-    ack_timeout          //确认包超时
+    ack_timeout,          //确认包超时
+    datalink_layer_ready //链路层就绪
 } event_type;            //事件类型枚举量
 
 #endif
 
 
 
-void from_network_layer(packet *p,int pid);//发送方从网络层得到纯数据包
+void from_network_layer(packet *p);//发送方从网络层得到纯数据包
 
-void to_network_layer(packet *p,int pid);//接收方向网络层发送纯数据包,去掉帧的类型、发送/确认序号等控制信息
+void to_network_layer(packet *p);//接收方向网络层发送纯数据包,去掉帧的类型、发送/确认序号等控制信息
 
 void from_physical_layer(frame *f);//接收方从物理层取得帧,帧头尾的FLAG字节、数据中的字节填充均已去掉,调用本函数前已验证过校验和，若发生错误则发送cksum_err事件，因此只有帧正确的情况下会调用本函数
 
@@ -78,10 +79,10 @@ void start_ack_timer(void);//启动确认包定时器
 
 void stop_ack_timer(void);//停止确认包定时器
 
-void enable_network_layer(void);//解除网络层阻塞,使可以产生新的network_layer_ready事件
+void enable_network_layer(const char* proc_name);//解除网络层阻塞,使可以产生新的network_layer_ready事件
 
-
-void disable_network_layer(void);//使网络层阻塞,不再产生新的network_layer_ready事件
+void enable_network_layer_read(const char* proc_name);//提醒网络层读数据
+void disable_network_layer(const char* proc_name);//使网络层阻塞,不再产生新的network_layer_ready事件
 
 //------------------------------------My Signal Def-------------------------------------------
 #define MYSIG_TIMEOUT SIGALRM //a) timeout 
