@@ -1,32 +1,41 @@
 #include"common.h"
 #include"tools.h"
 
-
 static frame_timer *mytimer = NULL;
 
+void enable_network_layer(const char* proc_name)
+{
+    static pid=-1;
+    while (pid==-1)//Èç¹ûÇó¹ı¾Í²»ÓÃÔÙÇóÁË¡£
+        pid=get_first_pid(proc_name);
+    sendSIG(pid,MYSIG_ENABLE_NETWORK_LAYER);
 
-void from_network_layer(packet *p,int pid)//·¢ËÍ·½´ÓÍøÂç²ãµÃµ½´¿Êı¾İ°ü
+};//½â³ıÍøÂç²ã×èÈû,Ê¹¿ÉÒÔ²úÉúĞÂµÄnetwork_layer_readyÊÂ¼ş
+
+void from_network_layer(packet *p)//·¢ËÍ·½´ÓÍøÂç²ãµÃµ½´¿Êı¾İ°ü
 {
     static int seq_PKT=0;//Ê¹ÓÃ¾²Ì¬¾Ö²¿±äÁ¿
     char share_file_name[MAX_FILENANE_LEN];
     int share_file=-1;
     sprintf(share_file_name, "%s%04d", NETWORK_DATALINK_SAHRE_FILE, seq_PKT);
     inc_seq_PKT(seq_PKT);
+    printf("open share...\n");
     while (share_file==-1)
     {
         share_file = open(share_file_name, O_RDONLY);
     }
+    printf("open share ok\n");
     //¼ÓËø£¬¶ÁÈ¡ÎÄ¼ş
     //printf("set lock to %s %d\n",share_file_name,share_file);
     set_lock(share_file,F_RDLCK);
     read(share_file,p->data,MAX_PKT);
     set_lock(share_file,F_UNLCK);//¶ÁÍê¿ªËø
     close(share_file);
-    //ÏòNETWORK_LAYER·¢ËÍenable ĞÅºÅ
-    sendSIG(pid,MYSIG_ENABLE_NETWORK_LAYER);
+    printf("close share ok\n");
+    //ÏòNETWORK_LAYER·¢ËÍenable ĞÅºÅ·ÖÀë³öÈ¥ ÓÉenable_network_layerÍê³É
+    
 }
-
-void to_network_layer(packet *p,int pid)//½ÓÊÕ·½ÏòÍøÂç²ã·¢ËÍ´¿Êı¾İ°ü,È¥µôÖ¡µÄÀàĞÍ¡¢·¢ËÍ/È·ÈÏĞòºÅµÈ¿ØÖÆĞÅÏ¢
+void to_network_layer(packet *p)//½ÓÊÕ·½ÏòÍøÂç²ã·¢ËÍ´¿Êı¾İ°ü,È¥µôÖ¡µÄÀàĞÍ¡¢·¢ËÍ/È·ÈÏĞòºÅµÈ¿ØÖÆĞÅÏ¢
 {
     static int seq_PKT=0;//Ê¹ÓÃ¾²Ì¬¾Ö²¿±äÁ¿
     char share_file_name[MAX_FILENANE_LEN];
@@ -37,9 +46,43 @@ void to_network_layer(packet *p,int pid)//½ÓÊÕ·½ÏòÍøÂç²ã·¢ËÍ´¿Êı¾İ°ü,È¥µôÖ¡µÄÀàĞ
 
     write(share_file,p->data,MAX_PKT);
     close(share_file);
-    //ÏòNETWORK_LAYER·¢ËÍenable ĞÅºÅ
-    kill(pid,MYSIG_DATALINK_LAYER_READY);
+    //ÏòNETWORK_LAYER·¢ËÍenable ĞÅºÅ µÄ²Ù×÷·ÖÀë³öÈ¥
+    
 }
+
+void enable_network_layer_read(const char* proc_name)
+{
+    static pid=-1;
+    while (pid==-1)//Èç¹ûÇó¹ı¾Í²»ÓÃÔÙÇóÁË¡£
+        pid=get_first_pid(proc_name);
+    sendSIG(pid,MYSIG_DATALINK_LAYER_READY);
+}
+
+void start_timer(seq_nr k)
+{
+    static frame_timer *rear = mytimer;
+    frame_timer *p=mytimer;
+
+    switch k :
+    {
+        case 0:
+        {
+            myhead=(frame_second)malloc(sizeof(frame_second));
+            myhead->sec=MYTIMER_TIMEOUT_TIME;
+        }
+        default :
+        {
+
+        }
+    }
+
+};//Æô¶¯µÚkÖ¡µÄ¶¨Ê±Æ÷
+
+void stop_timer(seq_nr k)
+{
+
+};//Í£Ö¹µÚkÖ¡µÄ¶¨Ê±Æ÷
+
 
 void from_physical_layer(frame *f){};//½ÓÊÕ·½´ÓÎïÀí²ãÈ¡µÃÖ¡,Ö¡Í·Î²µÄFLAG×Ö½Ú¡¢Êı¾İÖĞµÄ×Ö½ÚÌî³ä¾ùÒÑÈ¥µô,µ÷ÓÃ±¾º¯ÊıÇ°ÒÑÑéÖ¤¹ıĞ£ÑéºÍ£¬Èô·¢Éú´íÎóÔò·¢ËÍcksum_errÊÂ¼ş£¬Òò´ËÖ»ÓĞÖ¡ÕıÈ·µÄÇé¿öÏÂ»áµ÷ÓÃ±¾º¯Êı
 
@@ -74,7 +117,7 @@ void start_ack_timer(void){};//Æô¶¯È·ÈÏ°ü¶¨Ê±Æ÷
 
 void stop_ack_timer(void){};//Í£Ö¹È·ÈÏ°ü¶¨Ê±Æ÷
 
-void enable_network_layer(void){};//½â³ıÍøÂç²ã×èÈû,Ê¹¿ÉÒÔ²úÉúĞÂµÄnetwork_layer_readyÊÂ¼ş
+//void enable_network_layer(void){};//½â³ıÍøÂç²ã×èÈû,Ê¹¿ÉÒÔ²úÉúĞÂµÄnetwork_layer_readyÊÂ¼ş
 
 
-void disable_network_layer(void){};//Ê¹ÍøÂç²ã×èÈû,²»ÔÙ²úÉúĞÂµÄnetwork_layer_readyÊÂ¼ş
+//void disable_network_layer(void){};//Ê¹ÍøÂç²ã×èÈû,²»ÔÙ²úÉúĞÂµÄnetwork_layer_readyÊÂ¼ş

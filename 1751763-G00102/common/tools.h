@@ -14,3 +14,5 @@ int set_lock(int fd,int type);
 void sendSIG(int pid,int SIG);
 
 int getPid(const char*str);
+
+int get_first_pid(const char* proc_name);//if success , return pid ; if failed , return -1

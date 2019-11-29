@@ -18,11 +18,11 @@ static void SIGHANDLER_MYSIG_DISABLE_NETWORK_LAYER(int signo)
 int main()
 {
     const char *share_file = NETWORK_DATALINK_SAHRE_FILE;
-    const char *datalink_proc = "sender2_datalink";
+
 
     char filein[MAX_FILENANE_LEN] = "test", fileout[MAX_FILENANE_LEN];
-    printf("请输入要传输的文件名:\n");
-    scanf("%s", filein);
+    //printf("请输入要传输的文件名:\n");
+    //scanf("%s", filein);
 
     FILE *fin = fopen(filein, "rb");
     if (fin == NULL)
@@ -32,8 +32,8 @@ int main()
     seq_nr seq_PKT = 0;
     int rdsize = -1, i;
 
-    int pids[100];
-    //pids[0]=getPid(datalink_proc);
+    /*int pids[100];
+        const char *datalink_proc = "datalink";
     printf("check datalink ...\n");
     if (getpid_by_name(datalink_proc, pids) != 3) 
     {
@@ -41,6 +41,7 @@ int main()
         return 0;
     }
     printf("datalink check ok\n");
+    */
     signal(MYSIG_DISABLE_NETWORK_LAYER, SIGHANDLER_MYSIG_DISABLE_NETWORK_LAYER);
     signal(MYSIG_ENABLE_NETWORK_LAYER, SIGHANDLER_MYSIG_ENABLE_NETWORK_LAYER);
 
@@ -67,8 +68,8 @@ int main()
 
             inc_seq_PKT(seq_PKT);
 
-            printf("write share ok,send signal to %d\n",pids[0]);
-            kill(pids[0],MYSIG_NETWORK_LAYER_READY);
+            printf("write share %s ok\n",fileout);
+            //kill(pids[0],MYSIG_NETWORK_LAYER_READY);
         }
 
         pause();
