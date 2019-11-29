@@ -57,14 +57,14 @@ typedef enum
     ack_timeout,          //确认包超时
     datalink_layer_ready
 } event_type;            //事件类型枚举量
-/*
+
 typedef struct
 {
     int frame_id;
     int sec;
     frame_second *next;
 } frame_timer;
-*/
+
 
 #endif
 
