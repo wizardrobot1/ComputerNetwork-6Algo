@@ -61,7 +61,7 @@ typedef enum
 typedef struct
 {
     int frame_id;
-    int sec;
+    int msec;
     frame_second *next;
 } frame_timer;
 
