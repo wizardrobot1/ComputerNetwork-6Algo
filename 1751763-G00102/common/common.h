@@ -58,11 +58,11 @@ typedef enum
     datalink_layer_ready
 } event_type;            //事件类型枚举量
 
-typedef struct
+typedef struct frame_timer
 {
     int frame_id;
     int msec;
-    frame_timer *next;
+    struct frame_timer *next;
 } frame_timer;
 
 
