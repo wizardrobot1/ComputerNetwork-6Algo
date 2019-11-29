@@ -8,7 +8,6 @@ void start_timer(seq_nr k)
 {
     
     static frame_timer *rear = mytimer;
-    frame_timer *p=mytimer;
     int frame_id;
 
     if (cpid == 0)
@@ -55,21 +54,15 @@ void start_timer(seq_nr k)
 
 };//启动第k帧的定时器
 
-void set_mytimer(int sig)
+void set_mytimer(int sig)//每毫秒处理计时器链表操作
 {
-    
+    frame_timer *p;
+    while (mytimer && !mytimer->msec)
+    {
+        p=mytimer;
+        mytimer=mytimer->next;
+        free(p);
+    }
+    if(mytimer)
+        --mytimer->msec;
 }
-
-void start_timer_signal_deal(int sig, siginfo_t *info, void *data)
-{
-
-}
-
-void stop_timer(seq_nr k)
-{
-
-};//停止第k帧的定时器
-
-void start_ack_timer(void){};//启动确认包定时器
-
-void stop_ack_timer(void){};//停止确认包定时器
