@@ -1,5 +1,6 @@
 #include "../common/common.h"
 #include "../common/tools.h"
+#include "../common/d2n_layer.h"
 
 #define MAX_SEQ 1
 #define inc(k) if(k<MAX_SEQ) k=k+1; else k=0;
