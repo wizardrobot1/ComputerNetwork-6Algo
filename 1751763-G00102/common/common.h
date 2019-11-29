@@ -76,15 +76,6 @@ void from_physical_layer(frame *f);//接收方从物理层取得帧,帧头尾的FLAG字节、数据
 void to_physical_layer(frame *f);//发送方向物理层发送帧,帧头尾加FLAG字节、数据中进行字节填充,计算校验和放入帧尾
 
 
-void start_timer(seq_nr k);//启动第k帧的定时器
-
-void stop_timer(seq_nr k);//停止第k帧的定时器
-
-void start_ack_timer(void);//启动确认包定时器
-
-void stop_ack_timer(void);//停止确认包定时器
-
-
 //------------------------------------My Signal Def-------------------------------------------
 #define MYSIG_TIMEOUT SIGALRM //a) timeout 
 
@@ -101,10 +92,6 @@ void stop_ack_timer(void);//停止确认包定时器
 #define MYSIG_DISABLE_NETWORK_LAYER 39 //g) disable_network_layer
 
 #define MYSIG_DATALINK_LAYER_READY 40 // datalink_layer_ready //网络层可以收数据了
-
-#define MYSIG_TIMER_START 50 //通知定时器子进程启动
-
-#define MYSIG_TIMER_STOP 51 //通知定时器子进程启动
 
 
 //------------------------------------Share file name Def-------------------------------------------
