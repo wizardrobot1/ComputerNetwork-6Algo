@@ -81,7 +81,7 @@ void set_mytimer(int sig)//每毫秒处理计时器链表操作
 
 void start_timer_signal_deal(int sig, siginfo_t *info, void *data)//启动定时器信号处理
 {
-    int frame_id = info->i_value.sival_int; //帧号
+    int frame_id = info->si_value.sival_int; //帧号
     frame_timer *p = mytimer, *q = p;
     int msec = MYTIMER_TIMEOUT_TIME;
     while(p)
@@ -117,7 +117,7 @@ void stop_timer(seq_nr k)
 
 void stop_timer_signal_deal(int sig, siginfo_t *info, void *data)//停止定时器信号处理
 {
-    int frame_id = info->i_value.sival_int; //帧号
+    int frame_id = info->si_value.sival_int; //帧号
     frame_timer *p = mytimer, *q = p;
     int msec;
     while(p)
@@ -204,10 +204,10 @@ void start_ack_timer_signal_deal(int sig, siginfo_t *info, void *data)//启动定时
 
 
 
-void stop_ack_timer(void);//停止确认包定时器
+void stop_ack_timer(void)//停止确认包定时器
 {
     union sigval mysigval;
-    mysigval.sival_int = k;
+    mysigval.sival_int = -1;
     sigqueue(ack_timer_cpid, MYSIG_ACK_TIMER_STOP, mysigval);
 }
 
