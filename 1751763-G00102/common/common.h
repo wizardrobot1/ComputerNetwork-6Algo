@@ -107,7 +107,7 @@ void to_physical_layer(frame *f);//发送方向物理层发送帧,帧头尾加FLAG字节、数据中
 
 #define MAX_FILENANE_LEN 256
 
-#define MYTIMER_TIMEOUT_TIME 1 //定时器超时时间，单位：s
+#define MYTIMER_TIMEOUT_TIME 100 //定时器超时时间，单位：ms
 
 //-----------------------------------log path-----------------------------------------------------
 #define LOG_PATH "./log"
