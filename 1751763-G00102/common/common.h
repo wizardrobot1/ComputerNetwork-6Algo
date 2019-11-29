@@ -57,9 +57,17 @@ typedef enum
     ack_timeout          //È·ÈÏ°ü³¬Ê±
 } event_type;            //ÊÂ¼şÀàĞÍÃ¶¾ÙÁ¿
 
+typedef struct
+{
+    int frame_id;
+    int sec;
+    frame_second *next;
+} frame_timer;
+
+
 #endif
 
-
+//---------------------------------Func Def
 
 void from_network_layer(packet *p,int pid);//·¢ËÍ·½´ÓÍøÂç²ãµÃµ½´¿Êı¾İ°ü
 
@@ -99,6 +107,9 @@ void disable_network_layer(void);//Ê¹ÍøÂç²ã×èÈû,²»ÔÙ²úÉúĞÂµÄnetwork_layer_readyÊ
 #define MYSIG_DISABLE_NETWORK_LAYER 39 //g) disable_network_layer
 
 #define MYSIG_DATALINK_LAYER_READY 40 // datalink_layer_ready //ÍøÂç²ã¿ÉÒÔÊÕÊı¾İÁË
+
+#define MYTIMER_TIMEOUT_TIME 100 //¶¨Ê±Æ÷³¬Ê±Ê±¼ä£¬µ¥Î»£ºms
+
 
 //------------------------------------Share file name Def-------------------------------------------
 
