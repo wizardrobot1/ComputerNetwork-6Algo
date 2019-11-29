@@ -16,3 +16,5 @@ void sendSIG(int pid,int SIG);
 int getPid(const char*str);
 
 int get_first_pid(const char* proc_name);//if success , return pid ; if failed , return -1
+
+int get_datatime(char * psDateTime);

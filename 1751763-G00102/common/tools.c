@@ -101,3 +101,19 @@ int get_first_pid(const char* proc_name)//if success , return pid ; if failed , 
         else 
             return -1;
 }
+
+int get_datatime(char * psDateTime)
+{
+    long nSeconds;
+    struct tm * pTM;
+    
+    time(&nSeconds);
+    pTM = localtime(&nSeconds);
+
+    /* 系统日期和时间,格式: yyyymmddHHMMSS */
+    sprintf(psDateTime, "%04d-%02d-%02d %02d:%02d:%02d",
+            pTM->tm_year + 1900, pTM->tm_mon + 1, pTM->tm_mday,
+            pTM->tm_hour, pTM->tm_min, pTM->tm_sec);
+            
+    return 0;
+}

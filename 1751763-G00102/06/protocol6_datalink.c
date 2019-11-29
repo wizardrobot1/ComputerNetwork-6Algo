@@ -1,6 +1,7 @@
 #include "../common/common.h"
 #include "../common/tools.h"
 #include "../common/d2n_layer.h"
+#include "../common/savelog.h"
 #define MAX_SEQ 7 //保持2^n -1
 #define inc(k)           \
     if (k < MAX_SEQ + 1) \
@@ -13,9 +14,9 @@ seq_nr oldest_frame = MAX_SEQ + 1;
 
 static boolean between(seq_nr a, seq_nr b, seq_nr c)
 { //保证a<=b<c，a为循环滑动窗口下界，c为上界(三种情况)
-    //1.a=0 , b=5 , c=6 (待确认：0，1，2，3，4，5)
-    //2.c=1 , a=5 , b=6 (待确认：5，6，0)
-    //3.b=0 , c=1 , a=2 (待确认: 2,3,4,5,6,0)
+//1.a=0 , b=5 , c=6 (待确认：0，1，2，3，4，5)
+//2.c=1 , a=5 , b=6 (待确认：5，6，7,0)
+//3.b=0 , c=1 , a=2 (待确认: 2,3,4,5,6,7,0)
     if (((a <= b) && (b < c)) || ((c < a) && (a <= b)) || ((b < c) && (c < a)))
         return (true);
     else
@@ -107,9 +108,14 @@ int main()
             if (r.kind == data)
             {
                 if ((r.seq != frame_expected) && no_nak)//收到的帧不是想要的帧，有理由怀疑传输出错了，发送nak要求重传
+                {
                     send_frame(nak, 0, frame_expected, out_buf);
+                    record_err(frame_expected,rec_nak);
+                }    
                 else
                     start_ack_timer();//从有数据帧到来时刻开始计时，如果一段时间内都没有顺班车，就单独发一个ack
+                if (between(frame_expected, r.seq, too_far) && arrived[r.seq % NR_BUFS])//重复收到错误
+                    record_err(r.seq,rec_repeat);
                 if (between(frame_expected, r.seq, too_far) && arrived[r.seq % NR_BUFS] == false)
                 {
                     arrived[r.seq % NR_BUFS] = true;//记录该帧已经到达
@@ -129,9 +135,13 @@ int main()
         
             /* 如果收到nak，则根据nak包中的ack，找到对方未确认的包（对方最后一个确认的包序号r.ack加1）发送 ，（这个包应该是自己待确认包之一）*/
             if ((r.kind == nak) && between(ack_expected, (r.ack + 1) % (MAX_SEQ + 1), next_frame_to_send))
+            {    
                 send_frame(data, (r.ack + 1) % (MAX_SEQ + 1), frame_expected, out_buf);
-            
+                record_repeat((r.ack + 1) % (MAX_SEQ + 1),1,-1,rec_nak);
+            }
             /* 处理收到的ack（独立帧或数据帧捎带过来）*/
+            if (!between(ack_expected, r.ack, next_frame_to_send))//收到的不在ack窗口内
+                record_err(ack_expected,rec_outrange_ack);
             while(between(ack_expected, r.ack, next_frame_to_send)) //同Protocol5
             {
                 nbuffered = nbuffered - 1;
@@ -142,15 +152,23 @@ int main()
 
 
         case cksum_err:
+            record_err(frame_expected,rec_cksum_err);
             if (no_nak) //没发过nak则发nak
+            {
+                record_err(frame_expected,rec_cksum_nak);
                 send_frame(nak, 0, frame_expected, out_buf);
+            }    
             break;
 
         case timeout: //数据包超时则重发数据包
+            record_err(oldest_frame,rec_timeout);
+            record_repeat(oldest_frame,1,(frame_expected + MAX_SEQ) % (MAX_SEQ + 1),rec_timeout);
             send_frame(data, oldest_frame, frame_expected, out_buf);
             break;
 
         case ack_timeout: //ack超时则单独发ack包(未被捎带的情况)
+            record_err((frame_expected + MAX_SEQ) % (MAX_SEQ + 1),rec_ack_timeout);
+            record_repeat(-1,0,(frame_expected + MAX_SEQ) % (MAX_SEQ + 1),rec_ack_timeout);
             send_frame(ack, 0, frame_expected, out_buf);
             break;
     } //end of switch

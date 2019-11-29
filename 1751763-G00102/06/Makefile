@@ -1,4 +1,4 @@
-targets:=protocol6_network protocol6_datalink
+targets:=protocol6_network protocol6_datalink testlog
 
 common_dir := ../common
 local_dir := .

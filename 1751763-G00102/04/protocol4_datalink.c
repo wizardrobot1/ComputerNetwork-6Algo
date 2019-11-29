@@ -1,7 +1,7 @@
 #include "../common/common.h"
 #include "../common/tools.h"
 #include "../common/d2n_layer.h"
-
+#include "../common/savelog.h"
 #define MAX_SEQ 1
 #define inc(k) if(k<MAX_SEQ) k=k+1; else k=0;
 //#define MYDEBUG
@@ -70,12 +70,19 @@ int main()
         if (event == frame_arrival) //到达的可能是数据帧/ACK帧
         {
             from_physical_layer(&r);
+
+            if (r.seq != frame_expected && r.ack != next_frame_to_send)//重传了旧帧               
+                record_repeat(next_frame_to_send,1,1-frame_expected,rec_mismatch_ack);
+
             if (r.seq == frame_expected)//序号正确则向上层送
             { 
                 to_network_layer(&r.info);
                 enable_network_layer_read(network_proc);
                 inc(frame_expected);
             }
+            else
+                record_err(frame_expected,rec_mismatch_data);
+
             if (r.ack == next_frame_to_send)//确认帧到了，可以从网络层取下一个包了，关闭计时器
             {
                 stop_timer(r.ack);
@@ -83,6 +90,20 @@ int main()
                 enable_network_layer(network_proc);//通知网络层发下一数据
                 inc(next_frame_to_send);
             }
+            else
+                record_err(next_frame_to_send,rec_mismatch_ack);
+
+
+        }
+        else if (event==cksum_err)//如果event=cksum_err
+        {
+            record_err(next_frame_to_send,rec_cksum_err);
+            record_repeat(next_frame_to_send,1,1-frame_expected,rec_cksum_err);
+        }
+        else if (event==timeout)//如果event=timout
+        {
+            record_err(next_frame_to_send,rec_timeout);
+            record_repeat(next_frame_to_send,1,1-frame_expected,rec_timeout);
         }
         //收到对方帧(序号正确/错误)/收到cksum_err/timeout消息
         s.info = buffer; //可能是新帧（收到ack，且正确），也可能是旧帧（没收到或收到却是错的ack）

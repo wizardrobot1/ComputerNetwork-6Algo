@@ -1,7 +1,7 @@
 #include "../common/common.h"
 #include "../common/tools.h"
 #include "../common/d2n_layer.h"
-
+#include "../common/savelog.h"
 #define MAX_SEQ 1
 #define inc(k) if(k<MAX_SEQ) k=k+1; else k=0;
 
@@ -52,11 +52,20 @@ int main()
                 enable_network_layer_read(network_proc);
                 inc(frame_expected);
             }
+            else
+            {
+                record_err(frame_expected,rec_mismatch_data);
+                record_repeat(-1,0,1-frame_expected,rec_mismatch_data);
+            }
+            
             s.ack = 1 - frame_expected; //无论是否匹配,0-1变换
             s.kind=ack;
             s.seq=0xffffffff;
             to_physical_layer(&s);
         }
+        else
+            record_err(frame_expected,cksum_err);
+        
         //event = cksum_err，放弃，直接等待下一个事件
     }
 #endif
