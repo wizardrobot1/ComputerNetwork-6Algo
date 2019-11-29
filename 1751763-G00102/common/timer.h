@@ -18,4 +18,3 @@ void stop_timer_signal_deal(int sig, siginfo_t *info, void *data);//停止定时器信
 void start_ack_timer(void);//启动确认包定时器
 
 void stop_ack_timer(void);//停止确认包定时器
-
