@@ -62,7 +62,7 @@ typedef struct
 {
     int frame_id;
     int msec;
-    frame_second *next;
+    frame_timer *next;
 } frame_timer;
 
 
