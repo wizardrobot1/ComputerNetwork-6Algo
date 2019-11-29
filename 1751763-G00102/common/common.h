@@ -24,38 +24,38 @@ typedef enum
 {
     false,
     true
-} boolean; //çŠ¶æ€æšä¸¾é‡(false=0/true=1)
+} boolean; //×´Ì¬Ã¶¾ÙÁ¿(false=0/true=1)
 
-typedef unsigned int seq_nr; //å‘é€åºå·
+typedef unsigned int seq_nr; //·¢ËÍĞòºÅ
 
 typedef struct
 {
     unsigned char data[MAX_PKT];
-} packet; //æ•°æ®åŒ…ï¼Œçº¯æ•°æ®
+} packet; //Êı¾İ°ü£¬´¿Êı¾İ
 
 typedef enum
 {
-    data,     //æ•°æ®åŒ…
-    ack,      //ç¡®è®¤åŒ…
-    nak       //å¦å®šç¡®è®¤åŒ…
-} frame_kind; //å¸§ç±»å‹æšä¸¾é‡
+    data,     //Êı¾İ°ü
+    ack,      //È·ÈÏ°ü
+    nak       //·ñ¶¨È·ÈÏ°ü
+} frame_kind; //Ö¡ÀàĞÍÃ¶¾ÙÁ¿
 
 typedef struct
 {
-    frame_kind kind; //å¸§ç±»å‹
-    seq_nr seq;      //å‘é€åºå·
-    seq_nr ack;      //æ¥æ”¶åºå·
-    packet info;     //æ•°æ®åŒ…
+    frame_kind kind; //Ö¡ÀàĞÍ
+    seq_nr seq;      //·¢ËÍĞòºÅ
+    seq_nr ack;      //½ÓÊÕĞòºÅ
+    packet info;     //Êı¾İ°ü
 } frame;
 
 typedef enum
 {
-    frame_arrival,       //å¸§åˆ°è¾¾
-    cksum_err,           //æ£€éªŒå’Œé”™
-    timeout,             //å‘é€è¶…æ—¶
-    network_layer_ready, //ç½‘ç»œå±‚å°±ç»ª
-    ack_timeout          //ç¡®è®¤åŒ…è¶…æ—¶
-} event_type;            //äº‹ä»¶ç±»å‹æšä¸¾é‡
+    frame_arrival,       //Ö¡µ½´ï
+    cksum_err,           //¼ìÑéºÍ´í
+    timeout,             //·¢ËÍ³¬Ê±
+    network_layer_ready, //ÍøÂç²ã¾ÍĞ÷
+    ack_timeout          //È·ÈÏ°ü³¬Ê±
+} event_type;            //ÊÂ¼şÀàĞÍÃ¶¾ÙÁ¿
 
 typedef struct
 {
@@ -70,18 +70,18 @@ typedef struct
 //---------------------------------Func Def
 
 
-void from_physical_layer(frame *f);//æ¥æ”¶æ–¹ä»ç‰©ç†å±‚å–å¾—å¸§,å¸§å¤´å°¾çš„FLAGå­—èŠ‚ã€æ•°æ®ä¸­çš„å­—èŠ‚å¡«å……å‡å·²å»æ‰,è°ƒç”¨æœ¬å‡½æ•°å‰å·²éªŒè¯è¿‡æ ¡éªŒå’Œï¼Œè‹¥å‘ç”Ÿé”™è¯¯åˆ™å‘é€cksum_erräº‹ä»¶ï¼Œå› æ­¤åªæœ‰å¸§æ­£ç¡®çš„æƒ…å†µä¸‹ä¼šè°ƒç”¨æœ¬å‡½æ•°
+void from_physical_layer(frame *f);//½ÓÊÕ·½´ÓÎïÀí²ãÈ¡µÃÖ¡,Ö¡Í·Î²µÄFLAG×Ö½Ú¡¢Êı¾İÖĞµÄ×Ö½ÚÌî³ä¾ùÒÑÈ¥µô,µ÷ÓÃ±¾º¯ÊıÇ°ÒÑÑéÖ¤¹ıĞ£ÑéºÍ£¬Èô·¢Éú´íÎóÔò·¢ËÍcksum_errÊÂ¼ş£¬Òò´ËÖ»ÓĞÖ¡ÕıÈ·µÄÇé¿öÏÂ»áµ÷ÓÃ±¾º¯Êı
 
-void to_physical_layer(frame *f);//å‘é€æ–¹å‘ç‰©ç†å±‚å‘é€å¸§,å¸§å¤´å°¾åŠ FLAGå­—èŠ‚ã€æ•°æ®ä¸­è¿›è¡Œå­—èŠ‚å¡«å……,è®¡ç®—æ ¡éªŒå’Œæ”¾å…¥å¸§å°¾
+void to_physical_layer(frame *f);//·¢ËÍ·½ÏòÎïÀí²ã·¢ËÍÖ¡,Ö¡Í·Î²¼ÓFLAG×Ö½Ú¡¢Êı¾İÖĞ½øĞĞ×Ö½ÚÌî³ä,¼ÆËãĞ£ÑéºÍ·ÅÈëÖ¡Î²
 
 
-void start_timer(seq_nr k);//å¯åŠ¨ç¬¬kå¸§çš„å®šæ—¶å™¨
+void start_timer(seq_nr k);//Æô¶¯µÚkÖ¡µÄ¶¨Ê±Æ÷
 
-void stop_timer(seq_nr k);//åœæ­¢ç¬¬kå¸§çš„å®šæ—¶å™¨
+void stop_timer(seq_nr k);//Í£Ö¹µÚkÖ¡µÄ¶¨Ê±Æ÷
 
-void start_ack_timer(void);//å¯åŠ¨ç¡®è®¤åŒ…å®šæ—¶å™¨
+void start_ack_timer(void);//Æô¶¯È·ÈÏ°ü¶¨Ê±Æ÷
 
-void stop_ack_timer(void);//åœæ­¢ç¡®è®¤åŒ…å®šæ—¶å™¨
+void stop_ack_timer(void);//Í£Ö¹È·ÈÏ°ü¶¨Ê±Æ÷
 
 
 //------------------------------------My Signal Def-------------------------------------------
@@ -99,11 +99,11 @@ void stop_ack_timer(void);//åœæ­¢ç¡®è®¤åŒ…å®šæ—¶å™¨
 
 #define MYSIG_DISABLE_NETWORK_LAYER 39 //g) disable_network_layer
 
-#define MYSIG_DATALINK_LAYER_READY 40 // datalink_layer_ready //ç½‘ç»œå±‚å¯ä»¥æ”¶æ•°æ®äº†
+#define MYSIG_DATALINK_LAYER_READY 40 // datalink_layer_ready //ÍøÂç²ã¿ÉÒÔÊÕÊı¾İÁË
 
-#define MYSIG_TIMER_START 50 //é€šçŸ¥å®šæ—¶å™¨å­è¿›ç¨‹å¯åŠ¨
+#define MYSIG_TIMER_START 50 //Í¨Öª¶¨Ê±Æ÷×Ó½ø³ÌÆô¶¯
 
-#define MYSIG_TIMER_STOP 51 //é€šçŸ¥å®šæ—¶å™¨å­è¿›ç¨‹å¯åŠ¨
+#define MYSIG_TIMER_STOP 51 //Í¨Öª¶¨Ê±Æ÷×Ó½ø³ÌÆô¶¯
 
 
 //------------------------------------Share file name Def-------------------------------------------
@@ -119,5 +119,4 @@ void stop_ack_timer(void);//åœæ­¢ç¡®è®¤åŒ…å®šæ—¶å™¨
 
 #define MAX_FILENANE_LEN 256
 
-#define MYTIMER_TIMEOUT_TIME 1 //å®šæ—¶å™¨è¶…æ—¶æ—¶é—´ï¼Œå•ä½ï¼šs
-
+#define MYTIMER_TIMEOUT_TIME 1 //¶¨Ê±Æ÷³¬Ê±Ê±¼ä£¬µ¥Î»£ºs

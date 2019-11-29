@@ -33,7 +33,8 @@ static void send_frame(frame_kind fk, seq_nr frame_nr, seq_nr frame_expected, pa
     s.ack = (frame_expected + MAX_SEQ) % (MAX_SEQ + 1);//已确认的最后一个包是等待的包的上一个包
     if (fk == nak)
         no_nak = false; //全局变量，发完nak置false
-
+    if (fk == nak || fk == ack)
+        s.seq = 0xffffffff;
     to_physical_layer(&s);
     if (fk == data)
         start_timer(frame_nr % NR_BUFS); //
