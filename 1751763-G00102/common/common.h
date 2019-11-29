@@ -54,16 +54,17 @@ typedef enum
     cksum_err,           //检验和错
     timeout,             //发送超时
     network_layer_ready, //网络层就绪
-    ack_timeout          //确认包超时
+    ack_timeout,          //确认包超时
+    datalink_layer_ready
 } event_type;            //事件类型枚举量
-
+/*
 typedef struct
 {
     int frame_id;
     int sec;
     frame_second *next;
 } frame_timer;
-
+*/
 
 #endif
 
@@ -105,3 +106,8 @@ void to_physical_layer(frame *f);//发送方向物理层发送帧,帧头尾加FLAG字节、数据中
         k = 0;
 
 #define MAX_FILENANE_LEN 256
+
+#define MYTIMER_TIMEOUT_TIME 1 //定时器超时时间，单位：s
+
+//-----------------------------------log path-----------------------------------------------------
+#define LOG_PATH "./log"

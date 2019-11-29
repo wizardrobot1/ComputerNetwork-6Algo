@@ -1,7 +1,7 @@
 #include "../common/common.h"
 #include "../common/tools.h"
 #include "../common/d2n_layer.h"
-
+#include "../common/savelog.h"
 #define MAX_SEQ 1
 #define inc(k) if(k<MAX_SEQ) k=k+1; else k=0;
 //#define MYDEBUG
@@ -62,10 +62,23 @@ int main()
                 enable_network_layer(network_proc);//通知网络层发下一数据
                 inc(next_frame_to_send);
             }
-            //ACK到，但s.ack不对
+            else//ACK到，但s.ack不对
+            {
+                record_err(next_frame_to_send,rec_mismatch_ack);
+                record_repeat(next_frame_to_send,1,-1,rec_mismatch_ack);
+            }                    
+        }     
+        else if (event==cksum_err)//如果event=cksum_err
+        {
+            record_err(next_frame_to_send,rec_cksum_err);
+            record_repeat(next_frame_to_send,1,-1,rec_cksum_err);
         }
-        //如果event=cksum_err
-        //如果event=timout
+        else if (event==timeout)//如果event=timout
+        {
+            record_err(next_frame_to_send,rec_timeout);
+            record_repeat(next_frame_to_send,1,-1,rec_timeout);
+        }
+        
     } //end of while
 
 #endif
