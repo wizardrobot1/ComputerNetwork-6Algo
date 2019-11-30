@@ -1,6 +1,7 @@
 #ifndef __COMMON__H
 #define __COMMON__H
 #include <sys/time.h>
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -98,7 +99,7 @@ void to_physical_layer(frame *f);//发送方向物理层发送帧,帧头尾加FLAG字节、数据中
 
 #define MYSIG_DATALINK_LAYER_READY 40 // datalink_layer_ready //网络层可以收数据了
 
-
+#define MYSIG_CONTINUE 41 //阻塞继续信号
 //------------------------------------Share file name Def-------------------------------------------
 
 #define NETWORK_DATALINK_SAHRE_FILE "network_datalink.share."
