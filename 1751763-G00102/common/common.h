@@ -65,6 +65,11 @@ typedef struct frame_timer
     struct frame_timer *next;
 } frame_timer;
 
+typedef struct event_queue_node
+{
+    event_type event;
+    struct  event_queue_node *next;
+}*event_queue;
 
 #endif
 
