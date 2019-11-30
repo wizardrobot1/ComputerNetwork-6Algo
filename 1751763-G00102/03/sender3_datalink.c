@@ -27,8 +27,8 @@ static void SIGHANDLER_MYSIG_FRAME_ARRIVAL(int signo)
     }
     p->event = frame_arrival;
     p->next = NULL;
-    kill(getpid(),MYSIG_CONTINUE);
 }
+
 static void SIGHANDLER_MYSIG_TIMEOUT(int signo)
 {
     event_queue p=eventqueue;
@@ -48,8 +48,8 @@ static void SIGHANDLER_MYSIG_TIMEOUT(int signo)
     }
     p->event = timeout;
     p->next = NULL;
-    kill(getpid(),MYSIG_CONTINUE);
 }
+
 static void SIGHANDLER_MYSIG_CHSUM_ERR(int signo)
 {
     event_queue p=eventqueue;
@@ -69,9 +69,8 @@ static void SIGHANDLER_MYSIG_CHSUM_ERR(int signo)
     }
     p->event = cksum_err;
     p->next = NULL;
-    kill(getpid(),MYSIG_CONTINUE);
-
 }
+
 static void wait_for_event(event_type *event) //阻塞函数，等待事件发生
 {
     signal(MYSIG_FRAME_ARRIVAL, SIGHANDLER_MYSIG_FRAME_ARRIVAL);

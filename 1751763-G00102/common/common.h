@@ -69,6 +69,7 @@ typedef struct frame_timer
 typedef struct event_queue_node
 {
     event_type event;
+    seq_nr frame_id;
     struct  event_queue_node *next;
 }*event_queue;
 
@@ -98,8 +99,6 @@ void to_physical_layer(frame *f);//发送方向物理层发送帧,帧头尾加FLAG字节、数据中
 #define MYSIG_DISABLE_NETWORK_LAYER 39 //g) disable_network_layer
 
 #define MYSIG_DATALINK_LAYER_READY 40 // datalink_layer_ready //网络层可以收数据了
-
-#define MYSIG_CONTINUE 41 //阻塞继续信号
 //------------------------------------Share file name Def-------------------------------------------
 
 #define NETWORK_DATALINK_SAHRE_FILE "network_datalink.share."
