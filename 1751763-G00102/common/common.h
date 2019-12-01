@@ -75,14 +75,6 @@ typedef struct event_queue_node
 
 #endif
 
-//---------------------------------Func Def
-
-
-void from_physical_layer(frame *f);//接收方从物理层取得帧,帧头尾的FLAG字节、数据中的字节填充均已去掉,调用本函数前已验证过校验和，若发生错误则发送cksum_err事件，因此只有帧正确的情况下会调用本函数
-
-void to_physical_layer(frame *f);//发送方向物理层发送帧,帧头尾加FLAG字节、数据中进行字节填充,计算校验和放入帧尾
-
-
 //------------------------------------My Signal Def-------------------------------------------
 #define MYSIG_TIMEOUT SIGALRM //a) timeout 
 
@@ -99,13 +91,25 @@ void to_physical_layer(frame *f);//发送方向物理层发送帧,帧头尾加FLAG字节、数据中
 #define MYSIG_DISABLE_NETWORK_LAYER 39 //g) disable_network_layer
 
 #define MYSIG_DATALINK_LAYER_READY 40 // datalink_layer_ready //网络层可以收数据了
+
+#define MYSIG_ENABLE_DATALINK_LAYER 41 // enable_datalink_layer
+
+#define MYSIG_DISABLE_DATALINK_LAYER 42 // disable_datalink_layer
+
+#define MYSIG_PHYSICAL_LAYER_READY 43 // physical_layer_ready //链路层可以发数据了
+
+#define MYSIG_ENABLE_PHYSICAL_LAYER 44 // enable_physical_layer
+
+#define MYSIG_DISABLE_PHYSICAL_LAYER 45 // disable_physical_layer
 //------------------------------------Share file name Def-------------------------------------------
 
-#define NETWORK_DATALINK_SAHRE_FILE "network_datalink.share."
-#define DATALINK_NETWORK_SAHRE_FILE "datalink_network.share."
+#define NETWORK_DATALINK_SHARE_FILE "network_datalink.share."
+#define DATALINK_NETWORK_SHARE_FILE "datalink_network.share."
+#define PHYSICAL_DATALINK_SHARE_FILE "physical_datalink.share."
+#define DATALINK_PHYSICAL_SHARE_FILE "datalink_physical.share."
 //------------------------------------Share file seq_inc_fun Def
 #define inc_seq_PKT(k) \
-    if (k < 10000)     \
+    if (k < 999)     \
         k = k + 1;     \
     else               \
         k = 0;
