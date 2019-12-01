@@ -31,8 +31,19 @@ static void wait_for_event(event_type *event) //阻塞函数，等待事件发生
 int main()
 {
 
-    const char *network_proc = "network";
     signal(MYSIG_NETWORK_LAYER_READY, SIG_IGN); //屏蔽MYSIG_NETWORK_LAYER_READY信号
+    const char *network_proc = "network";
+    const char *physical_proc= "physical";
+    if (get_first_pid(network_proc)==-1)//因为要未经询问不阻塞取3层数据，所以要先打开3层放数据
+    {
+        printf("plz start netwrok_layer first");
+        return 0;
+    }
+    if (get_first_pid(physical_proc)==-1)//因为要向1层发信号提醒它读文件，所以要先打开1层（2层发文件给1层如果信号没收到他就不会收）
+    {
+        printf("plz start physical_layer first");
+        return 0;
+    }
     printf("datalink ready \n");
 
     seq_nr next_frame_to_send;
