@@ -6,21 +6,22 @@ static int ena = 0;
 static void SIGHANDLER_MYSIG_DATALINK_LAYER_READY(int signo)
 {
     signal(MYSIG_DATALINK_LAYER_READY, SIGHANDLER_MYSIG_DATALINK_LAYER_READY);
-    ena = 1;
+    ena ++;
 }
 
 
 int main()
 {
-    const char *share_file = DATALINK_NETWORK_SAHRE_FILE; //不是network_datalink
+    const char *share_file = DATALINK_NETWORK_SHARE_FILE; //不是network_datalink
 
     const char*fileout = "接收到的文件";
     int fdout = open(fileout, O_WRONLY | O_CREAT, 0644);
     if (fdout == -1)
         error_exit("open file");
-        
     char filein[MAX_FILENANE_LEN];
+
     FILE *fin;
+
     char buffer[2][MAX_PKT + 1];//因为要判断结束包后，才会对倒二个包进行处理
     memset(buffer[0], 0, MAX_PKT + 1);
     memset(buffer[1], 0, MAX_PKT + 1);
@@ -32,10 +33,11 @@ int main()
     signal(MYSIG_DATALINK_LAYER_READY, SIGHANDLER_MYSIG_DATALINK_LAYER_READY); //RNL 收到这个信号后读文件
 
     int i, end_of_file = 0, rdsize = 0, last_buf, last_PKT_size,first_PKT=1;
+    printf("network ready \n");
     while (1)
     {
 
-        if (ena) //如果ena
+        if (ena>0) //如果ena
         {
             last_buf = seq_buf;
             seq_buf=1-seq_buf;
@@ -77,9 +79,10 @@ int main()
             else    
                 first_PKT=0;
 
+			ena--;
         }
 
-        pause();
+//        pause();
     }
     close(fdout);
 }

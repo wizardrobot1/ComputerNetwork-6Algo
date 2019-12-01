@@ -1,5 +1,6 @@
 #include "../common/common.h"
 #include "../common/tools.h"
+#include "../common/p2d_layer.h"
 
 static int ena = 1;
 
@@ -15,12 +16,18 @@ static void SIGHANDLER_MYSIG_DISABLE_NETWORK_LAYER(int signo)
     ena = 0;
 }
 
-int main()
+int main(int argc,char* argv[])
 {
-    const char *share_file = NETWORK_DATALINK_SAHRE_FILE;
+    if (argc<2)
+    {
+        printf("run program + 要传输的文件名\n");
+        return 0;
+    }
+    const char *share_file = NETWORK_DATALINK_SHARE_FILE;
 
 
-    char filein[MAX_FILENANE_LEN] = "test", fileout[MAX_FILENANE_LEN];
+    char filein[MAX_FILENANE_LEN], fileout[MAX_FILENANE_LEN];
+    strcpy(filein,argv[1]);
     //printf("请输入要传输的文件名:\n");
     //scanf("%s", filein);
 
@@ -46,7 +53,7 @@ int main()
     signal(MYSIG_ENABLE_NETWORK_LAYER, SIGHANDLER_MYSIG_ENABLE_NETWORK_LAYER);
 
     int fdout, lock = 0;
-
+    printf("network ready \n");
     while (rdsize)
     {
 
@@ -68,12 +75,12 @@ int main()
 
             inc_seq_PKT(seq_PKT);
 
-            printf("write share %s ok\n",fileout);
+            //printf("write share %s ok\n",fileout);
             //kill(pids[0],MYSIG_NETWORK_LAYER_READY);
         }
 
         pause();
-        printf("pause ok\n");
+        //printf("pause ok\n");
         if (ena) //datalink成功读完share文件了,开锁，关闭文件，开始写下一个文件
         {
             if (lock)
@@ -82,6 +89,7 @@ int main()
                 lock = 0;
             }
             close(fdout);
+            remove(fileout);
         }
         else //datalink 的 窗口满了，没空读share文件，加锁，并且不能写下一个文件
         {
@@ -92,5 +100,6 @@ int main()
             }
         }
     }
+  
     fclose(fin);
 }

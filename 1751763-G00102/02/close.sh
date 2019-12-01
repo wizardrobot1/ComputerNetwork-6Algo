@@ -1,0 +1,6 @@
+killall receiver2_datalink
+killall receiver2_physical
+killall receiver2_network
+killall sender2_datalink
+killall sender2_physical
+killall sender2_network

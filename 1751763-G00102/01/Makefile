@@ -1,4 +1,4 @@
-targets:=sender1_network receiver1_network sender1_datalink receiver1_datalink
+targets:=sender1_network receiver1_network sender1_datalink receiver1_datalink sender1_physical receiver1_physical
 
 common_dir := ../common
 local_dir := .
@@ -29,4 +29,5 @@ $(targets):%:%.o
 	gcc -o $@ $< $(objs)
 
 clean:
-	-rm $(targets) *.o $(common_dir)/*.o network_datalink.share.* datalink_network.share.* 
+	-rm -f $(targets) *.o $(common_dir)/*.o network_datalink.share.* datalink_network.share.* physical_datalink.share.* datalink_physical.share.* 接收到的文件
+
