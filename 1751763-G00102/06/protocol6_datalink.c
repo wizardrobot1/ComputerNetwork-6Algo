@@ -41,31 +41,124 @@ static void send_frame(frame_kind fk, seq_nr frame_nr, seq_nr frame_expected, pa
         start_timer(frame_nr % NR_BUFS); //
     stop_ack_timer();                    //有任何类型数据发送则停止ack计时器
 }
-static event_type catch_event;
+static event_queue eventqueue= NULL;
 static void SIGHANDLER_MYSIG_FRAME_ARRIVAL(int signo)
 {
-    catch_event = frame_arrival;
+    event_queue p=eventqueue;
+    while(p&&p->next)
+    {
+        p=p->next;
+    }
+    if(!p)
+    {
+        eventqueue=(event_queue)malloc(sizeof(struct event_queue_node));
+        p=eventqueue;
+    }
+    else
+    {
+        p->next=(event_queue)malloc(sizeof(struct event_queue_node));
+        p=p->next;
+    }
+    p->event = frame_arrival;
+    p->next = NULL;
 }
-static void SIGHANDLER_MYSIG_TIMEOUT(int signo)
+static void SIGHANDLER_MYSIG_TIMEOUT(int sig, siginfo_t *info, void *data)
 {
-    catch_event = timeout;
+    event_queue p=eventqueue;
+    while(p&&p->next)
+    {
+        p=p->next;
+    }
+    if(!p)
+    {
+        eventqueue=(event_queue)malloc(sizeof(struct event_queue_node));
+        p=eventqueue;
+    }
+    else
+    {
+        p->next=(event_queue)malloc(sizeof(struct event_queue_node));
+        p=p->next;
+    }
+    switch (info->si_value.sival_int)
+    {
+        case -1:
+        {
+            p->event = timeout;
+            break;
+        }
+        
+        default:
+        {
+            p->frame_id = info->si_value.sival_int;
+            p->event = timeout;
+            break;
+        }    
+    }
+
+    p->next = NULL;
 }
 static void SIGHANDLER_MYSIG_CHSUM_ERR(int signo)
 {
-    catch_event = cksum_err;
+    event_queue p=eventqueue;
+    while(p&&p->next)
+    {
+        p=p->next;
+    }
+    if(!p)
+    {
+        eventqueue=(event_queue)malloc(sizeof(struct event_queue_node));
+        p=eventqueue;
+    }
+    else
+    {
+        p->next=(event_queue)malloc(sizeof(struct event_queue_node));
+        p=p->next;
+    }
+    p->event = cksum_err;
+    p->next = NULL;
 }
 static void SIGHANDLER_MYSIG_NETWORK_LAYER_READY(int signo)
 {
-    catch_event = network_layer_ready;
+    event_queue p=eventqueue;
+    while(p&&p->next)
+    {
+        p=p->next;
+    }
+    if(!p)
+    {
+        eventqueue=(event_queue)malloc(sizeof(struct event_queue_node));
+        p=eventqueue;
+    }
+    else
+    {
+        p->next=(event_queue)malloc(sizeof(struct event_queue_node));
+        p=p->next;
+    }
+    p->event = network_layer_ready;
+    p->next = NULL;
 }
 static void wait_for_event(event_type *event) //阻塞函数，等待事件发生
 {
     signal(MYSIG_FRAME_ARRIVAL, SIGHANDLER_MYSIG_FRAME_ARRIVAL);
-    signal(MYSIG_TIMEOUT, SIGHANDLER_MYSIG_TIMEOUT);
+
+    struct sigaction act, oact;
+    act.sa_sigaction = SIGHANDLER_MYSIG_TIMEOUT;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = SA_SIGINFO; //信息传递开关
+    sigaction(MYSIG_TIMEOUT,&act,&act);
+
     signal(MYSIG_CHSUM_ERR, SIGHANDLER_MYSIG_CHSUM_ERR);
     signal(MYSIG_NETWORK_LAYER_READY, SIGHANDLER_MYSIG_NETWORK_LAYER_READY);
-    pause();
-    *event = catch_event;
+    if(!eventqueue)
+        pause();
+
+    event_queue p=eventqueue;    
+    *event = eventqueue->event;
+    if (*event == timeout)
+        oldest_frame = eventqueue->frame_id;
+    eventqueue=eventqueue->next;
+    free(p);
+    
 }
 /*
 两个问题：oldest_frame获取和区分（ack_timeout，timeout事件）
@@ -90,6 +183,12 @@ int main()
     nbuffered = 0;
     for (i = 0; i < NR_BUFS; i++)
         arrived[i] = false;
+
+    signal(MYSIG_FRAME_ARRIVAL, SIGHANDLER_MYSIG_FRAME_ARRIVAL);
+    signal(MYSIG_TIMEOUT, SIGHANDLER_MYSIG_TIMEOUT);
+    signal(MYSIG_CHSUM_ERR, SIGHANDLER_MYSIG_CHSUM_ERR);
+    signal(MYSIG_NETWORK_LAYER_READY, SIGHANDLER_MYSIG_NETWORK_LAYER_READY);
+
     while (1)
     {
         wait_for_event(&event);

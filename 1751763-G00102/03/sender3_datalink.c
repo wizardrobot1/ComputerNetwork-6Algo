@@ -6,26 +6,83 @@
 #define inc(k) if(k<MAX_SEQ) k=k+1; else k=0;
 //#define MYDEBUG
 
-static event_type catch_event;
+static event_queue eventqueue= NULL;
+
 static void SIGHANDLER_MYSIG_FRAME_ARRIVAL(int signo)
 {
-    catch_event = frame_arrival;
+    event_queue p=eventqueue;
+    while(p&&p->next)
+    {
+        p=p->next;
+    }
+    if(!p)
+    {
+        eventqueue=(event_queue)malloc(sizeof(struct event_queue_node));
+        p=eventqueue;
+    }
+    else
+    {
+        p->next=(event_queue)malloc(sizeof(struct event_queue_node));
+        p=p->next;
+    }
+    p->event = frame_arrival;
+    p->next = NULL;
 }
+
 static void SIGHANDLER_MYSIG_TIMEOUT(int signo)
 {
-    catch_event = timeout;
+    event_queue p=eventqueue;
+    while(p&&p->next)
+    {
+        p=p->next;
+    }
+    if(!p)
+    {
+        eventqueue=(event_queue)malloc(sizeof(struct event_queue_node));
+        p=eventqueue;
+    }
+    else
+    {
+        p->next=(event_queue)malloc(sizeof(struct event_queue_node));
+        p=p->next;
+    }
+    p->event = timeout;
+    p->next = NULL;
 }
+
 static void SIGHANDLER_MYSIG_CHSUM_ERR(int signo)
 {
-    catch_event = cksum_err;
+    event_queue p=eventqueue;
+    while(p&&p->next)
+    {
+        p=p->next;
+    }
+    if(!p)
+    {
+        eventqueue=(event_queue)malloc(sizeof(struct event_queue_node));
+        p=eventqueue;
+    }
+    else
+    {
+        p->next=(event_queue)malloc(sizeof(struct event_queue_node));
+        p=p->next;
+    }
+    p->event = cksum_err;
+    p->next = NULL;
 }
+
 static void wait_for_event(event_type *event) //阻塞函数，等待事件发生
 {
     signal(MYSIG_FRAME_ARRIVAL, SIGHANDLER_MYSIG_FRAME_ARRIVAL);
     signal(MYSIG_TIMEOUT, SIGHANDLER_MYSIG_TIMEOUT);
     signal(MYSIG_CHSUM_ERR, SIGHANDLER_MYSIG_CHSUM_ERR);
-    pause();
-    *event = catch_event;
+    if(!eventqueue)
+        pause();
+
+    event_queue p=eventqueue;    
+    *event = eventqueue->event;
+    eventqueue=eventqueue->next;
+    free(p);
 }
 
 int main()
@@ -55,6 +112,9 @@ int main()
     next_frame_to_send = 0;      //初始帧号为0
     from_network_layer(&buffer); //取首帧
     enable_network_layer(network_proc);//通知网络层发下一数据
+    signal(MYSIG_FRAME_ARRIVAL, SIGHANDLER_MYSIG_FRAME_ARRIVAL);
+    signal(MYSIG_TIMEOUT, SIGHANDLER_MYSIG_TIMEOUT);
+    signal(MYSIG_CHSUM_ERR, SIGHANDLER_MYSIG_CHSUM_ERR);
     while (1)
     {
         s.info = buffer;
