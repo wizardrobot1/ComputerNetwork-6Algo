@@ -2,6 +2,7 @@
 #include "../common/tools.h"
 #include "../common/d2n_layer.h"
 #include "../common/savelog.h"
+
 #define MAX_SEQ 1
 #define inc(k) if(k<MAX_SEQ) k=k+1; else k=0;
 //#define MYDEBUG
@@ -39,11 +40,18 @@ int main()
 {
     signal(MYSIG_NETWORK_LAYER_READY, SIG_IGN); //屏蔽MYSIG_NETWORK_LAYER_READY信号
     const char *network_proc = "network";
-    if (get_first_pid(network_proc)==-1)//因为要向网络层发信号提醒它读文件，所以要先打开网络层
+    const char *physical_proc= "physical";
+    if (get_first_pid(network_proc)==-1)//因为要未经询问不阻塞取3层数据，所以要先打开3层放数据
     {
         printf("plz start netwrok_layer first");
         return 0;
     }
+    if (get_first_pid(physical_proc)==-1)//因为要向物理层发信号提醒它读文件，所以要先打开网络层（2层发文件给1层如果信号没收到他就不会收）
+    {
+        printf("plz start physical_layer first");
+        return 0;
+    }
+    //最后2
     printf("datalink ready \n");
     
     seq_nr next_frame_to_send;
@@ -95,12 +103,12 @@ int main()
 
 
         }
-        else if (event==cksum_err)//如果event=cksum_err
+        if (event==cksum_err)//如果event=cksum_err
         {
             record_err(next_frame_to_send,rec_cksum_err);
             record_repeat(next_frame_to_send,1,1-frame_expected,rec_cksum_err);
         }
-        else if (event==timeout)//如果event=timout
+        if (event==timeout)//如果event=timout
         {
             record_err(next_frame_to_send,rec_timeout);
             record_repeat(next_frame_to_send,1,1-frame_expected,rec_timeout);
