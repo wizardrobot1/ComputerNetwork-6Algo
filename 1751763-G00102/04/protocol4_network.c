@@ -67,17 +67,8 @@ int main()
     int rdsize = -1;
     int n2d_sharefile_fd, lock = 0;
     //-------------------------------------common----------------------------------------
-    /*
-    int pids[100];
-    const char *datalink_proc = "datalink";
-    printf("check datalink ...\n");
-    if (getpid_by_name(datalink_proc, pids) != 3)//因为要向链路层发信号，所以要先打开链路层进程
-    {
-        printf("请检测链路层程序是否正在运行\n");
-        return 0;
-    }
-    printf("datalink check ok\n");
-    */
+    
+    
     signal(MYSIG_DATALINK_LAYER_READY, SIGHANDLER_MYSIG_DATALINK_LAYER_READY); //RNL 收到这个信号后读文件
     signal(MYSIG_DISABLE_NETWORK_LAYER, SIGHANDLER_MYSIG_DISABLE_NETWORK_LAYER);
     signal(MYSIG_ENABLE_NETWORK_LAYER, SIGHANDLER_MYSIG_ENABLE_NETWORK_LAYER);
