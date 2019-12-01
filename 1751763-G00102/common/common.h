@@ -1,5 +1,6 @@
 #ifndef __COMMON__H
 #define __COMMON__H
+#include <sys/time.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -58,13 +59,19 @@ typedef enum
     datalink_layer_ready
 } event_type;            //事件类型枚举量
 
-typedef struct
+typedef struct frame_timer
 {
     int frame_id;
-    int sec;
-    frame_second *next;
+    int msec;
+    struct frame_timer *next;
 } frame_timer;
 
+typedef struct event_queue_node
+{
+    event_type event;
+    seq_nr frame_id;
+    struct  event_queue_node *next;
+}*event_queue;
 
 #endif
 
@@ -92,8 +99,6 @@ void to_physical_layer(frame *f);//发送方向物理层发送帧,帧头尾加FLAG字节、数据中
 #define MYSIG_DISABLE_NETWORK_LAYER 39 //g) disable_network_layer
 
 #define MYSIG_DATALINK_LAYER_READY 40 // datalink_layer_ready //网络层可以收数据了
-
-
 //------------------------------------Share file name Def-------------------------------------------
 
 #define NETWORK_DATALINK_SAHRE_FILE "network_datalink.share."
@@ -107,7 +112,7 @@ void to_physical_layer(frame *f);//发送方向物理层发送帧,帧头尾加FLAG字节、数据中
 
 #define MAX_FILENANE_LEN 256
 
-#define MYTIMER_TIMEOUT_TIME 1 //定时器超时时间，单位：s
+#define MYTIMER_TIMEOUT_TIME 100 //定时器超时时间，单位：ms
 
 //-----------------------------------log path-----------------------------------------------------
 #define LOG_PATH "./log"
