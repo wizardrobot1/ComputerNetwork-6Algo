@@ -1,65 +1,51 @@
 #include "../common/common.h"
 #include "../common/tools.h"
 #include "../common/d2n_layer.h"
-
-//#define MYDEBUG
-/*
-int getpid_by_name2(const char* proc_name,int *pids)
-{
-        char str_part1[100]="ps -ef | grep \'";
-        char *str_part2="\' | awk \'{print $8}\'";
-        char ans[4][100];
-        strcat(str_part1,proc_name);
-        strcat(str_part1,str_part2);
-        
-        int count=0;
-        FILE *fp = popen(str_part1,"r");
-        while (NULL != fgets(ans[count], 100, fp)) 
-        {   
-                ++count;
-        }   
-        if (count==3)
-        {
-            printf("%s\n",ans[0]);
-            printf("%s\n",ans[1]);
-            printf("%s\n",ans[2]);
-        }
-        pclose(fp);
-        return count;
-}
-*/
-
-
+#include "../common/p2d_layer.h"
 
 
 
 int main()
 {
-    
-
+#ifndef MYDEBUG
+    const char *physical_proc = "physical";
     const char *network_proc = "network";
-    signal(MYSIG_NETWORK_LAYER_READY, SIG_IGN); //屏蔽MYSIG_NETWORK_LAYER_READY信号
-    printf("datalink ready \n");
+	if (get_first_pid(physical_proc)==-1)//因为要向物理层发信号提醒它发文件，所以要先打开物理层
+    {
+        printf("plz start physical_layer first");
+        return 0;
+    }   
+
+
+	printf("datalink ready \n");
 
     frame s;
     packet buffer;
-
     
-#ifndef MYDEBUG
-
     while (1)
-    {
+    {	
         from_network_layer(&buffer);
         enable_network_layer(network_proc);//通知网络层发下一数据
         memcpy(s.info.data, buffer.data, MAX_PKT);
         s.kind=data;
         to_physical_layer(&s);
+ 		enable_physical_layer(PHYSICAL);
+
     }
+
+
+
 #endif
 
 #ifdef MYDEBUG
-    
-
+    const char *network_proc = "network";
+    if (get_first_pid("network")==-1)
+	{
+        printf("plz start network_layer first");
+        return 0;
+    }
+    frame s;
+    packet buffer;
     int ftest = open("test1", O_WRONLY | O_CREAT, 0644);
     while (1)
     {
@@ -73,4 +59,5 @@ int main()
 
     close(ftest);
 #endif
+
 }
